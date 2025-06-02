@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>化源工作室 - 软件镜像站</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #6a11cb;
+            --secondary: #2575fc;
+            --accent: #00f2fe;
+            --dark: #121212;
+            --light: #f8f9fa;
+            --gray: #2d2d3a;
+        }
+        
+        body {
+            background: linear-gradient(135deg, var(--dark), #1a1a2e);
+            color: var(--light);
+            line-height: 1.6;
+            overflow-x: hidden;
+            min-height: 100vh;
+            position: relative;
+        }
+        
+        /* 粒子背景效果 */
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        /* 导航栏样式 */
+        header {
+            background: rgba(18, 18, 18, 0.8);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 100%;
+            z-index: 1000;
+            padding: 1rem 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .logo h1 {
+            font-size: 1.8rem;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 700;
+        }
+        
+        .logo i {
+            font-size: 2rem;
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: var(--light);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 30px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        nav a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.3s ease;
+        }
+        
+        nav a:hover::after {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+        
+        nav a:hover {
+            color: var(--accent);
+        }
+        
+        /* 主要内容区域 */
+        main {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 100px 5% 50px;
+        }
+        
+        /* 镜像站标题 */
+        .mirror-header {
+            text-align: center;
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+        }
+        
+        .mirror-header h2 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            font-weight: 800;
+        }
+        
+        .mirror-header p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            color: #ccc;
+        }
+        
+        /* 镜像分类 */
+        .category-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            padding: 0.8rem 1.8rem;
+            background: rgba(45, 45, 58, 0.6);
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(106, 17, 203, 0.3);
+        }
+        
+        .category-tab.active {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-color: var(--accent);
+        }
+        
+        .category-tab:hover {
+            background: rgba(37, 117, 252, 0.3);
+        }
+        
+        /* 镜像列表 */
+        .mirror-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+        
+        .mirror-item {
+            background: rgba(45, 45, 58, 0.7);
+            border-radius: 15px;
+            padding: 1.8rem;
+            border: 1px solid rgba(106, 17, 203, 0.3);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .mirror-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(37, 117, 252, 0.3);
+            border-color: rgba(0, 242, 254, 0.6);
+        }
+        
+        .mirror-header-row {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.2rem;
+        }
+        
+        .mirror-icon {
+            font-size: 2.5rem;
+            color: var(--accent);
+        }
+        
+        .mirror-title {
+            font-size: 1.6rem;
+            color: var(--accent);
+        }
+        
+        .mirror-desc {
+            color: #ccc;
+            margin-bottom: 1.5rem;
+            min-height: 60px;
+        }
+        
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        
+        .file-detail {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            min-width: 120px;
+            background: rgba(37, 117, 252, 0.2);
+            padding: 0.8rem;
+            border-radius: 10px;
+        }
+        
+        .file-detail i {
+            font-size: 1.2rem;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+        
+        .file-detail span {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+        
+        .file-detail strong {
+            font-size: 1rem;
+        }
+        
+        .download-btn {
+            display: block;
+            width: 100%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 10px 20px;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            text-decoration: none;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .download-btn:hover {
+            box-shadow: 0 0 15px rgba(37, 117, 252, 0.5);
+        }
+        
+        /* 页脚 */
+        footer {
+            background: rgba(18, 18, 18, 0.9);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+            border-top: 1px solid rgba(37, 117, 252, 0.3);
+        }
+        
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        
+        .footer-links a {
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            nav ul {
+                margin-top: 1rem;
+                gap: 1rem;
+            }
+            
+            .mirror-header h2 {
+                font-size: 2.2rem;
+            }
+            
+            .mirror-header p {
+                font-size: 1rem;
+            }
+            
+            .category-tabs {
+                gap: 0.5rem;
+            }
+            
+            .category-tab {
+                padding: 0.6rem 1.2rem;
+                font-size: 0.9rem;
+            }
+            
+            .mirror-list {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 粒子背景 -->
+    <div id="particles-js"></div>
+    
+    <!-- 导航栏 -->
+    <header>
+        <div class="logo">
+            <i class="fas fa-code"></i>
+            <h1>化源工作室</h1>
+        </div>
+        <nav>
+            <ul>
+                <li><a href="index.html">返回主页</a></li>
+                <li><a href="#os">操作系统</a></li>
+                <li><a href="#tools">开发工具</a></li>
+                <li><a href="#apps">应用软件</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <!-- 镜像站标题 -->
+        <section class="mirror-header">
+            <h2>软件镜像下载站</h2>
+            <p>高速、安全、可靠的软件资源下载服务</p>
+        </section>
+        
+        <!-- 镜像分类 -->
+        <div class="category-tabs">
+            <div class="category-tab active">操作系统</div>
+            <div class="category-tab">开发工具</div>
+            <div class="category-tab">应用软件</div>
+            <div class="category-tab">学习资源</div>
+        </div>
+        
+        <!-- 镜像列表 -->
+        <div class="mirror-list">
+            <!-- Windows 11 镜像 -->
+            <div class="mirror-item">
+                <div class="mirror-header-row">
+                    <div class="mirror-icon">
+                        <i class="fab fa-windows"></i>
+                    </div>
+                    <h3 class="mirror-title">Windows 11 专业版</h3>
+                </div>
+                <p class="mirror-desc">官方原版Windows 11专业版镜像，包含最新更新和安全补丁。适用于新电脑安装或系统重装。</p>
+                
+                <div class="file-info">
+                    <div class="file-detail">
+                        <i class="fas fa-file-archive"></i>
+                        <span>文件格式</span>
+                        <strong>ISO</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-weight-hanging"></i>
+                        <span>文件大小</span>
+                        <strong>5.2 GB</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-code-branch"></i>
+                        <span>版本</span>
+                        <strong>22H2</strong>
+                    </div>
+                </div>
+                
+                <a href="win11.iso" class="download-btn">
+                    <i class="fas fa-download"></i> 下载镜像
+                </a>
+            </div>
+            
+            <!-- Ubuntu 镜像 -->
+            <div class="mirror-item">
+                <div class="mirror-header-row">
+                    <div class="mirror-icon">
+                        <i class="fab fa-ubuntu"></i>
+                    </div>
+                    <h3 class="mirror-title">Ubuntu 22.04 LTS</h3>
+                </div>
+                <p class="mirror-desc">最新的Ubuntu LTS版本，长期支持，稳定可靠，适合开发者和日常使用。</p>
+                
+                <div class="file-info">
+                    <div class="file-detail">
+                        <i class="fas fa-file-archive"></i>
+                        <span>文件格式</span>
+                        <strong>ISO</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-weight-hanging"></i>
+                        <span>文件大小</span>
+                        <strong>4.1 GB</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-code-branch"></i>
+                        <span>版本</span>
+                        <strong>22.04.2</strong>
+                    </div>
+                </div>
+                
+                <a href="#" class="download-btn">
+                    <i class="fas fa-download"></i> 下载镜像
+                </a>
+            </div>
+            
+            <!-- Visual Studio -->
+            <div class="mirror-item">
+                <div class="mirror-header-row">
+                    <div class="mirror-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="mirror-title">Visual Studio 2022</h3>
+                </div>
+                <p class="mirror-desc">微软官方开发工具，提供完整的开发环境，支持多种编程语言和框架。</p>
+                
+                <div class="file-info">
+                    <div class="file-detail">
+                        <i class="fas fa-file-archive"></i>
+                        <span>文件格式</span>
+                        <strong>ISO</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-weight-hanging"></i>
+                        <span>文件大小</span>
+                        <strong>25.7 GB</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-code-branch"></i>
+                        <span>版本</span>
+                        <strong>17.6.0</strong>
+                    </div>
+                </div>
+                
+                <a href="#" class="download-btn">
+                    <i class="fas fa-download"></i> 下载镜像
+                </a>
+            </div>
+            
+            <!-- Office 套件 -->
+            <div class="mirror-item">
+                <div class="mirror-header-row">
+                    <div class="mirror-icon">
+                        <i class="fas fa-file-word"></i>
+                    </div>
+                    <h3 class="mirror-title">Microsoft Office 2021</h3>
+                </div>
+                <p class="mirror-desc">最新版Office办公套件，包含Word、Excel、PowerPoint等常用工具。</p>
+                
+                <div class="file-info">
+                    <div class="file-detail">
+                        <i class="fas fa-file-archive"></i>
+                        <span>文件格式</span>
+                        <strong>ISO</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-weight-hanging"></i>
+                        <span>文件大小</span>
+                        <strong>3.8 GB</strong>
+                    </div>
+                    <div class="file-detail">
+                        <i class="fas fa-code-branch"></i>
+                        <span>版本</span>
+                        <strong>2021</strong>
+                    </div>
+                </div>
+                
+                <a href="#" class="download-btn">
+                    <i class="fas fa-download"></i> 下载镜像
+                </a>
+            </div>
+        </div>
+    </main>
+    
+    <!-- 页脚 -->
+    <footer>
+        <p>&copy; 2019 化源工作室 | 千变万化，追溯其源</p>
+        <div class="footer-links">
+            <a href="../index.html">返回主页</a>
+            <a href="../htm/">Something About C++</a>
+            <a href="#contact">联系我们</a>
+        </div>
+    </footer>
+    
+    <!-- 粒子背景脚本 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        // 初始化粒子背景
+        document.addEventListener('DOMContentLoaded', function() {
+            particlesJS('particles-js', {
+                particles: {
+                    number: { value: 80, density: { enable: true, value_area: 800 } },
+                    color: { value: "#00f2fe" },
+                    shape: { type: "circle" },
+                    opacity: { value: 0.5, random: true },
+                    size: { value: 3, random: true },
+                    line_linked: {
+                        enable: true,
+                        distance: 150,
+                        color: "#6a11cb",
+                        opacity: 0.4,
+                        width: 1
+                    },
+                    move: {
+                        enable: true,
+                        speed: 2,
+                        direction: "none",
+                        random: true,
+                        straight: false,
+                        out_mode: "out",
+                        bounce: false
+                    }
+                },
+                interactivity: {
+                    detect_on: "canvas",
+                    events: {
+                        onhover: { enable: true, mode: "grab" },
+                        onclick: { enable: true, mode: "push" },
+                        resize: true
+                    }
+                },
+                retina_detect: true
+            });
+            
+            // 分类标签切换
+            const tabs = document.querySelectorAll('.category-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        });
+    </script>
+</body>
+</html>
