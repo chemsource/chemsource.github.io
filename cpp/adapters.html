@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ STL 适配器(Adapters)详解</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0极0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #27ae60;
+            --secondary-color: #2ecc71;
+            --accent-color: #e67e22;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--dark-color), #1a2530);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: var(--accent-color);
+        }
+        
+        .header p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .component-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .component-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+        }
+        
+        .component-card h4 i {
+            color: var(--accent极);
+        }
+        
+        .code-container {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        
+        .copy-btn {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--dark-color);
+            display: inline-block;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        ul li {
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-exchange-alt"></i> C++ STL 适配器(Adapters)详解</h1>
+        <p>适配器是STL中修改组件接口的强大工具，提供不同的数据结构和功能视图</p>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-info-circle"></i> 什么是适配器？</h2>
+        <p>适配器是修改其他组件接口的组件，使它们具有不同的行为或功能。STL提供了三种主要类型的适配器：容器适配器、迭代器适配器和函数适配器。</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>适配器基本概念</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;stack&gt;
+#include &lt;vector&gt;
+
+int main() {
+    // 容器适配器：基于vector实现stack
+    std::stack&lt;int, std::vector&lt;int&gt;&gt; myStack;
+    
+    // 迭代器适配器：反向迭代器
+    std::vector&lt;int&gt; vec = {1, 2, 3};
+    for (auto it = vec.rbegin(); it != vec.rend(); ++it) {
+        // 使用反向迭代器
+    }
+    
+    // 函数适配器：绑定器
+    auto is_greater_than_5 = std::bind(std::greater&lt;int&gt;(), 
+                                      std::placeholders::_1, 5);
+    bool result = is_greater_than_5(10); // true
+    
+    return 0;
+}</pre>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-layer-group"></i> 容器适配器</h2>
+        <p>容器适配器为顺序容器提供不同的接口</p>
+        
+        <div class="components-grid">
+            <div class="component-card">
+                <h4><i class="fas fa-layer-group"></i> stack</h4>
+                <p>后进先出(LIFO)数据结构</p>
+                <ul>
+                    <li>push() - 向栈顶添加元素</li>
+                    <li>pop() - 移除栈顶元素</li>
+                    <li>top() - 访问栈顶元素</li>
+                    <li>empty() - 检查栈是否为空</li>
+                    <li>size() - 返回元素数量</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-stream"></i> queue</h4>
+                <p>先进先出(FIFO)数据结构</p>
+                <ul>
+                    <li>push() - 向队尾添加元素</li>
+                    <li>pop() - 移除队首元素</li>
+                    <li>front() - 访问队首元素</li>
+                    <li>back() - 访问队尾元素</li>
+                    <li>empty() - 检查队列是否为空</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-sort-amount-up"></i> priority_queue</h4>
+                <p>元素按优先级排序的队列</p>
+                <ul>
+                    <li>push() - 插入元素</li>
+                    <li>pop() - 移除顶部元素</li>
+                    <li>top() - 访问顶部元素</li>
+                    <li>empty() - 检查是否为空</li>
+                    <li>size() - 返回元素数量</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>容器适配器使用示例</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;stack&gt;
+#include &lt;queue&gt;
+
+int main() {
+    // stack示例
+    std::stack&lt;int&gt; s;
+    s.push(10);
+    s.push(20);
+    s.push(30);
+    std::cout &lt;&lt; "Stack top: " &lt;&lt; s.top() &lt;&lt; std::endl; // 30
+    s.pop();
+    std::cout &lt;&lt; "After pop: " &lt;&lt; s.top() &lt;&lt; std::endl; // 20
+    
+    // queue示例
+    std::queue&lt;int&gt; q;
+    q.push(10);
+    q.push(20);
+    q.push(30);
+    std::cout &lt;&lt; "Queue front: " &lt;&lt; q.front() &lt;&lt; std::endl; // 10
+    q.pop();
+    std::cout &lt;&lt; "After pop: " &lt;&lt; q.front() &lt;&lt; std::endl; // 20
+    
+    // priority_queue示例
+    std::priority_queue&lt;int&gt; pq;
+    pq.push(30);
+    pq.push(10);
+    pq.push(20);
+    std::cout &lt;&lt; "Priority queue top: " &lt;&lt; pq.top() &lt;&lt; std::endl; // 30
+    pq.pop();
+    std::cout &lt;&lt; "After pop: " &lt;&lt; pq.top() &lt;&lt; std::endl; // 20
+    
+    return 0;
+}</pre>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-retweet"></i> 迭代器适配器</h2>
+        <p>提供不同的迭代器访问方式</p>
+        
+        <div class="components-grid">
+            <div class="component-card">
+                <h4><i class="fas fa-backward"></i> 反向迭代器</h4>
+                <p>rbegin(), rend() - 反向遍历容器</p>
+                <div class="code-container">
+                    <pre>std::vector&lt;int&gt; v = {1,2,3};
+for (auto it = v.rbegin(); it != v.rend(); ++it) {
+    std::cout &lt;&lt; *it &lt;&lt; " "; // 3 2 1
+}</pre>
+                </div>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-plus-circle"></i> 插入迭代器</h4>
+                <p>back_inserter, front_inserter, inserter</p>
+                <div class="code-container">
+                    <pre>std::vector&lt;int&gt; v;
+std::fill_n(std::back_inserter(v), 3, 10);
+// v = {10, 10, 10}</pre>
+                </div>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-stream"></i> 流迭代器</h4>
+                <p>istream_iterator, ostream_iterator</p>
+                <div class="code-container">
+                    <pre>std::vector&lt;int&gt; data;
+std::copy(std::istream_iterator&lt;int&gt;(std::cin),
+          std::istream_iterator&lt;int&gt;(),
+          std::back_inserter(data));</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-wrench"></i> 函数适配器</h2>
+        <p>修改或组合函数对象的行为</p>
+        
+        <div class="components-grid">
+            <div class="component-card">
+                <h4><i class="fas fa-link"></i> 绑定器</h4>
+                <p>bind1st, bind2nd (C++11后被std::bind替代)</p>
+                <div class="code-container">
+                    <pre>auto greater_than_5 = 
+    std::bind(std::greater&lt;int&gt;(), std::placeholders::_1, 5);
+bool result = greater_than_5(10); // true</pre>
+                </div>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-ban"></i> 否定器</h4>
+                <p>not1, not2 - 对谓词结果取反</p>
+                <div class="code-container">
+                    <pre>auto not_even = std::not1(std::ptr_fun([](int n){ 
+    return n % 2 == 0; 
+}));
+bool result = not_even(3); // true</pre>
+                </div>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-cog"></i> 成员函数适配器</h4>
+                <p>mem_fun, mem_fun_ref - 调用成员函数</p>
+                <div class="code-container">
+                    <pre>struct Person {
+    void print() const { /*...*/ }
+};
+std::vector&lt;Person&gt; people;
+std::for_each(people.begin(), people.end(),
+              std::mem_fun_ref(&Person::print));</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-code"></i> 综合示例</h2>
+        <p>使用多种适配器解决实际问题</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>适配器综合应用</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;iterator&gt;
+#include &lt;functional&gt;
+
+int main() {
+    std::vector&lt;int&gt; data = {7, 3, 9, 4, 6, 1};
+    
+    // 使用反向迭代器输出原始数据（逆序）
+    std::cout &lt;&lt; "原始数据(逆序): ";
+    std::copy(data.rbegin(), data.rend(), 
+             std::ostream_iterator&lt;int&gt;(std::cout, " "));
+    
+    // 使用函数适配器找出所有大于5的数
+    auto greater_than_5 = [](int x) { return x > 5; };
+    int count = std::count_if(data.begin(), data.end(), greater_than_5);
+    std::cout &lt;&lt; "\n大于5的元素数量: " &lt;&lt; count;
+    
+    // 使用插入迭代器创建新容器
+    std::vector&lt;int&gt; filtered;
+    std::copy_if(data.begin(), data.end(), 
+                std::back_inserter(filtered), greater_than_5);
+    
+    // 使用容器适配器(栈)处理过滤后的数据
+    std::stack&lt;int&gt; s;
+    for (int n : filtered) s.push(n);
+    
+    std::cout &lt;&lt; "\n栈内容: ";
+    while (!s.empty()) {
+        std::cout &lt;&lt; s.top() &lt;&lt; " ";
+        s.pop();
+    }
+    
+    return 0;
+}</pre>
+        </div>
+        
+        <h3>输出结果</h3>
+        <div class="code-container">
+            <pre>原始数据(逆序): 1 6 4 9 3 7 
+大于5的元素数量: 3
+栈内容: 9 7 6</pre>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>C++ STL 适配器参考指南 | 提供完整的使用示例和最佳实践</p>
+        <a href="stl.html" class="back-btn">返回主页面</a>
+    </div>
+
+    <script>
+        // 代码复制功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const pre = button.parentElement.nextElementSibling;
+                const range = document.createRange();
+                range.selectNode(pre);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                
+                // 显示复制成功反馈
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

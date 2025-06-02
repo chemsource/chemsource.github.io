@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++算法介绍</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/github-dark.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/languages/cpp.min.js"></script>
+    <script>hljs.highlightAll();</script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #1e1e1e;
+            color: #e0e0e0;
+            line-height: 1.6;
+        }
+        
+        .container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        /* 左侧导航样式 */
+        .sidebar {
+            width: 250px;
+            background-color: #252526;
+            padding: 20px 0;
+            border-right: 1px solid #3c3c3c;
+            overflow-y: auto;
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+        }
+        
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid #3c3c3c;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            color: #4ec9b0;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            font-size: 0.9rem;
+            color: #858585;
+        }
+        
+        .category {
+            margin-top: 20px;
+        }
+        
+        .category-title {
+            padding: 10px 20px;
+            font-weight: bold;
+            color: #4ec9b0;
+            background-color: #2d2d2d;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category-title::after {
+            content: '▼';
+            font-size: 0.7rem;
+        }
+        
+        .algorithms {
+            list-style: none;
+            padding: 5px 0;
+        }
+        
+        .algorithm-item {
+            padding: 10px 20px 10px 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: #d4d4d4;
+        }
+        
+        .algorithm-item:hover {
+            background-color: #2a2d2e;
+            color: #4ec9b0;
+        }
+        
+        .algorithm-item.active {
+            background-color: #37373d;
+            color: #4ec9b0;
+            border-left: 3px solid #4ec9b0;
+        }
+        
+        /* 主内容区域样式 */
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 30px;
+        }
+        
+        .algorithm-section {
+            background-color: #2d2d2d;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .algorithm-section h2 {
+            color: #4ec9b0;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3c3c3c;
+        }
+        
+        .algorithm-info {
+            margin-bottom: 25px;
+        }
+        
+        .algorithm-info h3 {
+            color: #d7ba7d;
+            margin: 15px 0 10px;
+        }
+        
+        .algorithm-info p {
+            margin-bottom: 15px;
+        }
+        
+        .complexity-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #252526;
+        }
+        
+        .complexity-table th, 
+        .complexity-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border: 1px solid #3c3c3c;
+        }
+        
+        .complexity-table th {
+            background-color: #1e1e1e;
+            color: #4ec9b0;
+        }
+        
+        .complexity-table tr:nth-child(even) {
+            background-color: #2a2d2e;
+        }
+        
+        .code-section {
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 20px 0;
+            overflow-x: auto;
+            border: 1px solid #3c3c3c;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            color: #9cdcfe;
+        }
+        
+        .run-btn {
+            background-color: #4ec9b0;
+            color: #1e1e1e;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .run-btn:hover {
+            background-color: #3da89d;
+        }
+        
+        pre {
+            margin: 0;
+        }
+        
+        code {
+            font-family: 'Consolas', monospace;
+        }
+        
+        .output {
+            background-color: #1e1e1e;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #3c3c3c;
+            color: #d4d4d4;
+            display: none;
+        }
+        
+        .output-title {
+            color: #d7ba7d;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+        
+        .output-content {
+            font-family: 'Consolas', monospace;
+            white-space: pre-wrap;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            margin-top: 40px;
+            color: #858585;
+            border-top: 1px solid #3c3c3c;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+                border-right: none;
+                border-bottom: 1px solid #3c3c3c;
+            }
+            
+            .main-content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 左侧导航 -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>C++ 算法指南</h1>
+                <p>探索C++标准库中的强大算法</p>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">排序算法</div>
+                <ul class="algorithms">
+                    <li class="algorithm-item active" data-target="sort-intro">算法介绍</li>
+                    <li class="algorithm-item" data-target="sort">std::sort</li>
+                    <li class="algorithm-item" data-target="stable-sort">std::stable_sort</li>
+                    <li class="algorithm-item" data-target="partial-sort">std::partial_sort</li>
+                </ul>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">搜索算法</div>
+                <ul class="algorithms">
+                    <li class="algorithm-item" data-target="find">std::find</li>
+                    <li class="algorithm-item" data-target="binary-search">std::binary_search</li>
+                    <li class="algorithm-item" data-target="lower-bound">std::lower_bound</li>
+                </ul>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">数值算法</div>
+                <ul class="algorithms">
+                    <li class="algorithm-item" data-target="accumulate">std::accumulate</li>
+                    <li class="algorithm-item" data-target="inner-product">std::inner_product</li>
+                    <li class="algorithm-item" data-target="adjacent-difference">std::adjacent_difference</li>
+                </ul>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">修改序列算法</div>
+                <ul class="algorithms">
+                    <li class="algorithm-item" data-target="copy">std::copy</li>
+                    <li class="algorithm-item" data-target="transform">std::transform</li>
+                    <li class="algorithm-item" data-target="replace">std::replace</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- 主内容区域 -->
+        <div class="main-content">
+            <!-- 排序算法介绍 -->
+            <div class="algorithm-section" id="sort-intro">
+                <h2>C++标准库算法介绍</h2>
+                <div class="algorithm-info">
+                    <p>C++标准模板库(STL)提供了超过100个强大的算法，用于执行各种操作，包括排序、搜索、转换和数值计算。这些算法通过迭代器与容器协同工作，提供了高效且类型安全的操作方式。</p>
+                    
+                    <h3>算法分类</h3>
+                    <ul>
+                        <li><strong>排序算法</strong>：对序列进行排序或部分排序</li>
+                        <li><strong>搜索算法</strong>：在序列中查找元素或子序列</li>
+                        <li><strong>数值算法</strong>：执行数值计算操作</li>
+                        <li><strong>修改序列算法</strong>：复制、移动、修改或替换元素</li>
+                        <li><strong>分区算法</strong>：根据条件划分序列</li>
+                        <li><strong>堆算法</strong>：创建和操作堆数据结构</li>
+                    </ul>
+                    
+                    <h3>核心优势</h3>
+                    <p>STL算法具有以下优点：</p>
+                    <ul>
+                        <li><strong>通用性</strong>：通过迭代器抽象，算法可以应用于各种容器类型</li>
+                        <li><strong>效率</strong>：经过高度优化，性能接近手动实现的代码</li>
+                        <li><strong>类型安全</strong>：通过模板实现类型安全</li>
+                        <li><strong>可组合性</strong>：算法可以组合使用实现复杂功能</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- std::sort 示例 -->
+            <div class="algorithm-section" id="sort">
+                <h2>std::sort</h2>
+                <div class="algorithm-info">
+                    <p><code>std::sort</code> 是C++标准库中最常用的排序算法，使用IntroSort实现（结合快速排序、堆排序和插入排序），平均时间复杂度为O(N log N)。</p>
+                    
+                    <h3>复杂度分析</h3>
+                    <table class="complexity-table">
+                        <tr>
+                            <th>情况</th>
+                            <th>时间复杂度</th>
+                            <th>空间复杂度</th>
+                        </tr>
+                        <tr>
+                            <td>平均情况</td>
+                            <td>O(N log N)</td>
+                            <td>O(log N)</td>
+                        </tr>
+                        <tr>
+                            <td>最坏情况</td>
+                            <td>O(N log N)</td>
+                            <td>O(log N)</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>基本用法</h3>
+                    <div class="code-section">
+                        <div class="code-header">
+                            <span>排序整数向量</span>
+                            <button class="run-btn" onclick="runCode('sort-code', 'sort-output')">运行</button>
+                        </div>
+                        <pre><code id="sort-code" class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {5, 2, 9, 1, 5, 6};
+    
+    // 使用std::sort排序
+    std::sort(nums.begin(), nums.end());
+    
+    std::cout &lt;&lt; "排序后的向量: ";
+    for (int num : nums) {
+        std::cout &lt;&lt; num &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+    
+    return 0;
+}</code></pre>
+                        <div class="output" id="sort-output">
+                            <div class="output-title">输出结果:</div>
+                            <div class="output-content"></div>
+                        </div>
+                    </div>
+                    
+                    <h3>自定义比较</h3>
+                    <div class="code-section">
+                        <div class="code-header">
+                            <span>按降序排序</span>
+                            <button class="run-btn" onclick="runCode('sort-desc-code', 'sort-desc-output')">运行</button>
+                        </div>
+                        <pre><code id="sort-desc-code" class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {5, 2, 9, 1, 5, 6};
+    
+    // 使用lambda表达式自定义比较函数（降序）
+    std::sort(nums.begin(), nums.end(), [](int a, int b) {
+        return a > b;
+    });
+    
+    std::cout &lt;&lt; "降序排序结果: ";
+    for (int num : nums) {
+        std::cout &lt;&lt; num &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; std::endl;
+    
+    return 0;
+}</code></pre>
+                        <div class="output" id="sort-desc-output">
+                            <div class="output-title">输出结果:</div>
+                            <div class="output-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- std::find 示例 -->
+            <div class="algorithm-section" id="find">
+                <h2>std::find</h2>
+                <div class="algorithm-info">
+                    <p><code>std::find</code> 在序列中查找特定值，返回指向该元素的迭代器，如果未找到则返回结束迭代器。</p>
+                    
+                    <h3>复杂度分析</h3>
+                    <table class="complexity-table">
+                        <tr>
+                            <th>情况</th>
+                            <th>时间复杂度</th>
+                            <th>空间复杂度</th>
+                        </tr>
+                        <tr>
+                            <td>平均情况</td>
+                            <td>O(N)</td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td>最坏情况</td>
+                            <td>O(N)</td>
+                            <td>O(1)</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>基本用法</h3>
+                    <div class="code-section">
+                        <div class="code-header">
+                            <span>在向量中查找元素</span>
+                            <button class="run-btn" onclick="runCode('find-code', 'find-output')">运行</button>
+                        </div>
+                        <pre><code id="find-code" class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {5, 2, 9, 1, 5, 6};
+    int target = 9;
+    
+    // 使用std::find查找元素
+    auto it = std::find(nums.begin(), nums.end(), target);
+    
+    if (it != nums.end()) {
+        std::cout &lt;&lt; "找到元素 " &lt;&lt; target &lt;&lt; " 在位置 " 
+                  &lt;&lt; (it - nums.begin()) &lt;&lt; std::endl;
+    } else {
+        std::cout &lt;&lt; target &lt;&lt; " 未找到" &lt;&lt; std::endl;
+    }
+    
+    return 0;
+}</code></pre>
+                        <div class="output" id="find-output">
+                            <div class="output-title">输出结果:</div>
+                            <div class="output-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- std::accumulate 示例 -->
+            <div class="algorithm-section" id="accumulate">
+                <h2>std::accumulate</h2>
+                <div class="algorithm-info">
+                    <p><code>std::accumulate</code> 计算序列中所有元素的累积和（或自定义操作的结果）。</p>
+                    
+                    <h3>复杂度分析</h3>
+                    <table class="complexity-table">
+                        <tr>
+                            <th>情况</th>
+                            <th>时间复杂度</th>
+                            <th>空间复杂度</th>
+                        </tr>
+                        <tr>
+                            <td>所有情况</td>
+                            <td>O(N)</td>
+                            <td>O(1)</td>
+                        </tr>
+                    </table>
+                    
+                    <h3>基本用法</h3>
+                    <div class="code-section">
+                        <div class="code-header">
+                            <span>计算向量元素和</span>
+                            <button class="run-btn" onclick="runCode('accumulate-code', 'accumulate-output')">运行</button>
+                        </div>
+                        <pre><code id="accumulate-code" class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;numeric&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {1, 2, 3, 4, 5};
+    
+    // 使用std::accumulate计算总和
+    int sum = std::accumulate(nums.begin(), nums.end(), 0);
+    
+    std::cout &lt;&lt; "元素总和: " &lt;&lt; sum &lt;&lt; std::endl;
+    
+    return 0;
+}</code></pre>
+                        <div class="output" id="accumulate-output">
+                            <div class="output-title">输出结果:</div>
+                            <div class="output-content"></div>
+                        </div>
+                    </div>
+                    
+                    <h3>自定义操作</h3>
+                    <div class="code-section">
+                        <div class="code-header">
+                            <span>计算乘积</span>
+                            <button class="run-btn" onclick="runCode('accumulate-mult-code', 'accumulate-mult-output')">运行</button>
+                        </div>
+                        <pre><code id="accumulate-mult-code" class="language-cpp">#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;numeric&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {1, 2, 3, 4, 5};
+    
+    // 使用自定义操作计算乘积
+    int product = std::accumulate(nums.begin(), nums.end(), 1, 
+        [](int a, int b) {
+            return a * b;
+        });
+    
+    std::cout &lt;&lt; "元素乘积: " &lt;&lt; product &lt;&lt; std::endl;
+    
+    return 0;
+}</code></pre>
+                        <div class="output" id="accumulate-mult-output">
+                            <div class="output-title">输出结果:</div>
+                            <div class="output-content"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>© 2023 C++算法指南 | 使用 highlight.js 实现代码高亮</p>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 导航菜单交互
+        document.querySelectorAll('.algorithm-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.algorithm-item').forEach(el => {
+                    el.classList.remove('active');
+                });
+                
+                // 添加active类到当前项
+                this.classList.add('active');
+                
+                // 滚动到对应部分
+                const targetId = this.getAttribute('data-target');
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        // 模拟代码运行
+        function runCode(codeId, outputId) {
+            const outputDiv = document.getElementById(outputId);
+            const codeContent = document.getElementById(codeId).textContent;
+            
+            // 根据代码内容模拟不同输出
+            let output = "";
+            if (codeId.includes('sort-desc')) {
+                output = "降序排序结果: 9 6 5 5 2 1";
+            } else if (codeId.includes('sort')) {
+                output = "排序后的向量: 1 2 5 5 6 9";
+            } else if (codeId.includes('find')) {
+                output = "找到元素 9 在位置 2";
+            } else if (codeId.includes('accumulate-mult')) {
+                output = "元素乘积: 120";
+            } else if (codeId.includes('accumulate')) {
+                output = "元素总和: 15";
+            }
+            
+            outputDiv.querySelector('.output-content').textContent = output;
+            outputDiv.style.display = 'block';
+        }
+        
+        // 折叠/展开分类
+        document.querySelectorAll('.category-title').forEach(title => {
+            title.addEventListener('click', function() {
+                const algorithms = this.nextElementSibling;
+                algorithms.style.display = algorithms.style.display === 'none' ? 'block' : 'none';
+                this.classList.toggle('collapsed');
+            });
+        });
+    </script>
+</body>
+</html>

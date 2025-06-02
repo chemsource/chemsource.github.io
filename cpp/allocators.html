@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ STL 空间配置器(Allocators)详解</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #9b59b6;
+            --secondary-color: #8e44ad;
+            --accent-color: #3498db;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--dark-color), #1a2530);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: var(--accent-color);
+        }
+        
+        .header p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5极 15px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .component-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .component-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+        }
+        
+        .component-card h4 i {
+            color: var(--accent-color);
+        }
+        
+        .code-container {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        
+        .copy-btn {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--dark-color);
+            display: inline-block;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        ul li {
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-memory"></i> C++ STL 空间配置器(Allocators)详解</h1>
+        <p>空间配置器是STL的内存管理核心组件，负责封装内存分配和释放操作</p>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-info-circle"></i> 什么是空间配置器？</h2>
+        <p>空间配置器是STL中负责内存管理的组件，封装了内存分配和释放的细节。STL容器默认使用<code class="highlight">std::allocator</code>，但开发者可以自定义分配器以满足特定需求。</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>默认分配器使用示例</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;vector&gt;
+#include &lt;memory&gt; // 包含allocator
+
+int main() {
+    // 使用默认分配器的vector
+    std::vector&lt;int, std::allocator&lt;int&gt;&gt; numbers;
+    
+    numbers.push_back(10);
+    numbers.push_back(20);
+    numbers.push_back(30);
+    
+    // 显式使用分配器
+    std::allocator&lt;int&gt; alloc;
+    int* p = alloc.allocate(1);
+    alloc.construct(p, 100);
+    std::cout &lt;&lt; *p &lt;&lt; std::endl; // 100
+    alloc.destroy(p);
+    alloc.deallocate(p, 1);
+    
+    return 0;
+}</pre>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-cogs"></i> 空间配置器的主要功能</h2>
+        <p>空间配置器提供以下核心功能：</p>
+        
+        <div class="components-grid">
+            <div class="component-card">
+                <h4><i class="fas fa-database"></i> allocate(size_t n)</h4>
+                <p>分配足够存储n个对象的内存块</p>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-trash-alt"></i> deallocate(T* p, size_t n)</h4>
+                <p>释放之前分配的内存块</p>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-hammer"></i> construct(T* p, Args&&... args)</h4>
+                <p>在给定地址构造对象(C++17后弃用)</p>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-broom"></i> destroy(T* p)</h4>
+                <p>销毁给定地址的对象(C++17后弃用)</p>
+            </div>
+        </div>
+        
+        <h3>现代C++的变化</h3>
+        <p>在C++17及更高版本中，<code>construct</code>和<code>destroy</code>成员函数已被弃用，取而代之的是<code>std::allocator_traits</code>和通用构造/销毁工具。</p>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-wrench"></i> 自定义分配器应用场景</h2>
+        <p>自定义分配器在特定场景下非常有用：</p>
+        
+        <div class="components-grid">
+            <div class="component-card">
+                <h4><i class="fas fa-tint"></i> 内存池</h4>
+                <p>减少内存分配开销，提高性能</p>
+                <ul>
+                    <li>避免频繁调用系统内存分配</li>
+                    <li>减少内存碎片</li>
+                    <li>提高缓存命中率</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-share-alt"></i> 共享内存</h4>
+                <p>在进程间共享数据结构</p>
+                <ul>
+                    <li>跨进程通信</li>
+                    <li>高效数据共享</li>
+                    <li>避免数据复制</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-microchip"></i> 特殊硬件</h4>
+                <p>针对特定硬件的内存分配</p>
+                <ul>
+                    <li>对齐内存分配</li>
+                    <li>非易失性内存</li>
+                    <li>GPU内存分配</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-bug"></i> 调试追踪</h4>
+                <p>内存泄漏检测和调试</p>
+                <ul>
+                    <li>分配/释放追踪</li>
+                    <li>内存使用统计</li>
+                    <li>边界检查</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-code"></i> 自定义分配器实现</h2>
+        <p>下面是一个简单内存池分配器的实现示例：</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>内存池分配器实现</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;memory&gt;
+
+template &lt;typename T&gt;
+class MemoryPoolAllocator {
+public:
+    using value_type = T;
+    
+    MemoryPoolAllocator() noexcept = default;
+    
+    template &lt;typename U&gt;
+    MemoryPoolAllocator(const MemoryPoolAllocator&lt;U&gt;&amp;) noexcept {}
+    
+    T* allocate(std::size_t n) {
+        std::cout &lt;&lt; "Allocating " &lt;&lt; n &lt;&lt; " object(s)\n";
+        return static_cast&lt;T*&gt;(::operator new(n * sizeof(T)));
+    }
+    
+    void deallocate(T* p, std::size_t n) {
+        std::cout &lt;&lt; "Deallocating " &lt;&lt; n &lt;&lt; " object(s)\n";
+        ::operator delete(p);
+    }
+    
+    // 可选：实现构造和销毁（C++17后通常不需要）
+    template &lt;typename U, typename... Args&gt;
+    void construct(U* p, Args&&... args) {
+        std::cout &lt;&lt; "Constructing object\n";
+        new (p) U(std::forward&lt;Args&gt;(args)...);
+    }
+    
+    template &lt;typename U&gt;
+    void destroy(U* p) {
+        std::cout &lt;&lt; "Destroying object\n";
+        p->~U();
+    }
+};
+
+int main() {
+    // 使用自定义分配器的vector
+    std::vector&lt;int, MemoryPoolAllocator&lt;int&gt;&gt; vec;
+    
+    std::cout &lt;&lt; "添加元素...\n";
+    vec.push_back(10);
+    vec.push_back(20);
+    vec.push_back(30);
+    
+    std::cout &lt;&lt; "Vector内容: ";
+    for (int n : vec) {
+        std::cout &lt;&lt; n &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "\n";
+    
+    std::cout &lt;&lt; "离开作用域，自动销毁...\n";
+    return 0;
+}</pre>
+        </div>
+        
+        <h3>输出示例</h3>
+        <div class="code-container">
+            <pre>添加元素...
+Allocating 1 object(s)
+Constructing object
+Allocating 2 object(s)
+Constructing object
+Constructing object
+Deallocating 1 object(s)
+Allocating 4 object(s)
+Constructing object
+Constructing object
+Constructing object
+Deallocating 2 object(s)
+Vector内容: 10 20 30 
+离开作用域，自动销毁...
+Destroying object
+Destroying object
+Destroying object
+Deallocating 4 object(s)</pre>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-lightbulb"></i> 最佳实践与注意事项</h2>
+        
+        <div class="components-grid">
+            <div class="component-card">
+                <h4><i class="fas fa-check-circle"></i> 分配器要求</h4>
+                <ul>
+                    <li>必须是无状态的（或仔细处理状态）</li>
+                    <li>必须提供value_type类型定义</li>
+                    <li>必须实现allocate和deallocate</li>
+                    <li>比较操作应正确实现</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-exclamation-triangle"></i> 常见陷阱</h4>
+                <ul>
+                    <li>内存对齐问题</li>
+                    <li>异常安全问题</li>
+                    <li>线程安全问题</li>
+                    <li>状态管理问题</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-rocket"></i> 性能优化</h4>
+                <ul>
+                    <li>使用内存池减少碎片</li>
+                    <li>批量分配提高效率</li>
+                    <li>缓存友好设计</li>
+                    <li>避免不必要的初始化</li>
+                </ul>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-clipboard-list"></i> 现代C++特性</h4>
+                <ul>
+                    <li>C++11：支持有状态分配器</li>
+                    <li>C++17：多态分配器</li>
+                    <li>C++20：constexpr分配器支持</li>
+                    <li>使用allocator_traits</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-project-diagram"></i> 高级应用：多态分配器</h2>
+        <p>C++17引入了多态分配器，允许在运行时切换分配策略：</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>多态分配器示例</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;memory_resource&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    // 创建内存池资源
+    std::pmr::unsynchronized_pool_resource pool;
+    
+    // 使用内存池的vector
+    std::pmr::vector&lt;int&gt; vec{&pool};
+    
+    vec.push_back(10);
+    vec.push_back(20);
+    vec.push_back(30);
+    
+    std::cout &lt;&lt; "Vector内容: ";
+    for (int n : vec) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 创建单调缓冲区资源
+    char buffer[1024];
+    std::pmr::monotonic_buffer_resource mono_res{buffer, sizeof(buffer)};
+    
+    // 使用单调缓冲区的vector
+    std::pmr::vector&lt;int&gt; temp_vec{&mono_res};
+    temp_vec.push_back(100);
+    temp_vec.push_back(200);
+    
+    return 0;
+}</pre>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>C++ STL 空间配置器参考指南 | 提供完整的使用示例和最佳实践</p>
+        <a href="stl.html" class="back-btn">返回主页面</a>
+    </div>
+
+    <script>
+        // 代码复制功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const pre = button.parentElement.nextElementSibling;
+                const range = document.createRange();
+                range.selectNode(pre);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                
+                // 显示复制成功反馈
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STL算法大全</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #f0f0f0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-container {
+            display: flex;
+            margin: 20px auto 30px;
+            max-width: 600px;
+        }
+        
+        #search {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            font-size: 16px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .search-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: #ff5252;
+        }
+        
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .category-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #4ecdc4;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .algorithm-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .algorithm-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card-header {
+            background: #4a69bd;
+            color: white;
+            padding: 15px 20px;
+        }
+        
+        .card-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .card-header .header-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-body p {
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        .code-block {
+            background: #2d3436;
+            color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .complexity {
+            background: #ffeaa7;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+            margin-top: 50px;
+            font-size: 1rem;
+        }
+        
+        .no-results {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            font-size: 1.2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .algorithms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>STL 算法大全</h1>
+            <p class="subtitle">C++标准模板库算法完整参考指南，包含详细说明、代码示例和时间复杂度分析</p>
+        </header>
+        
+        <div class="search-container">
+            <input type="text" id="search" placeholder="搜索算法 (例如: sort, find, transform...)" autocomplete="off">
+            <button class="search-btn">搜索</button>
+        </div>
+        
+        <div class="categories">
+            <button class="category-btn active" data-category="all">全部</button>
+            <button class="category-btn" data-category="non-modifying">非修改序列操作</button>
+            <button class="category-btn" data-category="modifying">修改序列操作</button>
+            <button class="category-btn" data-category="sorting">排序操作</button>
+            <button class="category-btn" data-category="numeric">数值操作</button>
+        </div>
+        
+        <div class="algorithms-grid">
+            <!-- 算法卡片开始 -->
+            <div class="algorithm-card" data-category="sorting">
+                <div class="card-header">
+                    <h3>std::sort</h3>
+                    <div class="header-desc">快速排序算法</div>
+                </div>
+                <div class="card-body">
+                    <p>对范围 [first, last) 中的元素进行排序，默认按升序排序。</p>
+                    <div class="code-block">
+#include &lt;algorithm&gt;<br>
+#include &lt;vector&gt;<br><br>
+std::vector&lt;int&gt; v = {5, 3, 1, 4, 2};<br>
+std::sort(v.begin(), v.end());<br>
+// v 现在为 {1, 2, 3, 4, 5}
+                    </div>
+                    <div class="complexity">平均时间复杂度: O(n log n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="non-modifying">
+                <div class="card-header">
+                    <h3>std::find</h3>
+                    <div class="header-desc">查找元素</div>
+                </div>
+                <div class="card-body">
+                    <p>在范围 [first, last) 中查找等于 value 的元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {10, 20, 30, 40};<br>
+auto it = std::find(v.begin(), v.end(), 30);<br>
+if (it != v.end()) {<br>
+&nbsp;&nbsp;std::cout << "找到元素: " << *it;<br>
+}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="modifying">
+                <div class="card-header">
+                    <h3>std::transform</h3>
+                    <div class="header-desc">应用函数到范围</div>
+                </div>
+                <div class="card-body">
+                    <p>将一元操作应用于输入范围，并将结果存储在目标范围中。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; v2(4);<br>
+std::transform(v1.begin(), v1.end(), v2.begin(),<br>
+&nbsp;&nbsp;[](int n) { return n * n; });<br>
+// v2 现在为 {1, 4, 9, 16}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="numeric">
+                <div class="card-header">
+                    <h3>std::accumulate</h3>
+                    <div class="header-desc">范围求和</div>
+                </div>
+                <div class="card-body">
+                    <p>计算范围内元素的累加和，或使用二元操作进行累积计算。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+int sum = std::accumulate(v.begin(), v.end(), 0);<br>
+// sum = 10<br><br>
+int product = std::accumulate(v.begin(), v.end(), 1,<br>
+&nbsp;&nbsp;[](int a, int b) { return a * b; });<br>
+// product = 24
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="modifying">
+                <div class="card-header">
+                    <h3>std::copy</h3>
+                    <div class="header-desc">复制范围</div>
+                </div>
+                <div class="card-body">
+                    <p>将范围 [first, last) 中的元素复制到从 d_first 开始的另一范围。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; dest(4);<br>
+std::copy(src.begin(), src.end(), dest.begin());<br>
+// dest 现在为 {1, 2, 3, 4}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="modifying">
+                <div class="card-header">
+                    <h3>std::remove</h3>
+                    <div class="header-desc">移除元素</div>
+                </div>
+                <div class="card-body">
+                    <p>从范围 [first, last) 中移除所有等于 value 的元素，但不改变容器大小。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 2, 5};<br>
+auto new_end = std::remove(v.begin(), v.end(), 2);<br>
+v.erase(new_end, v.end());<br>
+// v 现在为 {1, 3, 5}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="modifying">
+                <div class="card-header">
+                    <h3>std::reverse</h3>
+                    <div class="header-desc">反转范围</div>
+                </div>
+                <div class="card-body">
+                    <p>反转范围 [first, last) 中元素的顺序。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::reverse(v.begin(), v.end());<br>
+// v 现在为 {4, 3, 2, 1}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="modifying">
+                <div class="card-header">
+                    <h3>std::unique</h3>
+                    <div class="header-desc">删除连续重复元素</div>
+                </div>
+                <div class="card-body">
+                    <p>删除范围 [first, last) 中连续的重复元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 1, 2, 2, 3, 3, 3, 4};<br>
+auto last = std::unique(v.begin(), v.end());<br>
+v.erase(last, v.end());<br>
+// v 现在为 {1, 2, 3, 4}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="non-modifying">
+                <div class="card-header">
+                    <h3>std::count</h3>
+                    <div class="header-desc">计数元素</div>
+                </div>
+                <div class="card-body">
+                    <p>返回范围 [first, last) 中等于 value 的元素数。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 2, 4, 2};<br>
+int count = std::count(v.begin(), v.end(), 2);<br>
+// count = 3
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="non-modifying">
+                <div class="card-header">
+                    <h3>std::max_element</h3>
+                    <div class="header-desc">查找最大元素</div>
+                </div>
+                <div class="card-body">
+                    <p>返回范围 [first, last) 中最大元素的迭代器。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {3, 1, 4, 2, 5};<br>
+auto max_it = std::max_element(v.begin(), v.end());<br>
+std::cout << "最大值: " << *max_it;<br>
+// 输出: 最大值: 5
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="non-modifying">
+                <div class="card-header">
+                    <h3>std::binary_search</h3>
+                    <div class="header-desc">二分查找</div>
+                </div>
+                <div class="card-body">
+                    <p>检查范围 [first, last) 中是否存在等价于 value 的元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5, 6, 7};<br>
+bool found = std::binary_search(v.begin(), v.end(), 4);<br>
+// found = true<br>
+bool not_found = std::binary_search(v.begin(), v.end(), 8);<br>
+// not_found = false
+                    </div>
+                    <div class="complexity">时间复杂度: O(log n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card" data-category="modifying">
+                <div class="card-header">
+                    <h3>std::fill</h3>
+                    <div class="header-desc">填充范围</div>
+                </div>
+                <div class="card-body">
+                    <p>将给定值复制赋值给范围 [first, last) 中的每个元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v(5); // {0, 0, 0, 0, 0}<br>
+std::fill(v.begin(), v.end(), 10);<br>
+// v 现在为 {10, 10, 10, 10, 10}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <!-- 更多算法卡片... -->
+            
+        </div>
+        
+        <footer>
+            <p>STL算法大全 &copy; 2023 | 包含C++11到C++23的所有标准库算法</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const categoryBtns = document.querySelectorAll('.category-btn');
+            const algorithmCards = document.querySelectorAll('.algorithm-card');
+            const searchInput = document.getElementById('search');
+            const searchBtn = document.querySelector('.search-btn');
+            const algorithmsGrid = document.querySelector('.algorithms-grid');
+            
+            // 分类筛选功能
+            categoryBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有按钮的active类
+                    categoryBtns.forEach(b => b.classList.remove('active'));
+                    // 添加当前按钮的active类
+                    this.classList.add('active');
+                    
+                    const category = this.getAttribute('data-category');
+                    
+                    // 显示/隐藏卡片
+                    algorithmCards.forEach(card => {
+                        if (category === 'all' || card.getAttribute('data-category') === category) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    // 检查是否有可见结果
+                    checkVisibleResults();
+                });
+            });
+            
+            // 搜索功能
+            function performSearch() {
+                const searchTerm = searchInput.value.toLowerCase().trim();
+                
+                if (searchTerm === '') {
+                    // 如果搜索词为空，显示所有卡片
+                    algorithmCards.forEach(card => {
+                        card.style.display = 'block';
+                    });
+                    // 重置分类按钮状态
+                    categoryBtns.forEach((btn, index) => {
+                        if (index === 0) {
+                            btn.classList.add('active');
+                        } else {
+                            btn.classList.remove('active');
+                        }
+                    });
+                } else {
+                    // 搜索匹配的卡片
+                    algorithmCards.forEach(card => {
+                        const cardTitle = card.querySelector('.card-header h3').textContent.toLowerCase();
+                        const cardDesc = card.querySelector('.card-header .header-desc').textContent.toLowerCase();
+                        const cardContent = card.querySelector('.card-body p').textContent.toLowerCase();
+                        
+                        if (cardTitle.includes(searchTerm) || 
+                            cardDesc.includes(searchTerm) || 
+                            cardContent.includes(searchTerm)) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                    
+                    // 移除所有分类按钮的active类
+                    categoryBtns.forEach(btn => btn.classList.remove('active'));
+                }
+                
+                // 检查是否有可见结果
+                checkVisibleResults();
+            }
+            
+            // 检查是否有可见结果，如果没有则显示提示
+            function checkVisibleResults() {
+                const visibleCards = Array.from(algorithmCards).filter(card => 
+                    window.getComputedStyle(card).display !== 'none'
+                );
+                
+                // 移除现有的无结果提示
+                const existingNoResults = document.querySelector('.no-results');
+                if (existingNoResults) {
+                    existingNoResults.remove();
+                }
+                
+                // 如果没有可见卡片，显示提示
+                if (visibleCards.length === 0) {
+                    const noResultsDiv = document.createElement('div');
+                    noResultsDiv.className = 'no-results';
+                    noResultsDiv.innerHTML = `
+                        <h3>未找到匹配的算法</h3>
+                        <p>请尝试其他搜索词或选择不同的分类</p>
+                    `;
+                    algorithmsGrid.appendChild(noResultsDiv);
+                }
+            }
+            
+            // 绑定搜索事件
+            searchBtn.addEventListener('click', performSearch);
+            searchInput.addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    performSearch();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

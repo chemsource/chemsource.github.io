@@ -1,0 +1,3088 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STL算法大全</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            padding: 30px 0;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        
+        h1 {
+            font-size: 3.5rem;
+            color: white;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            color: #f0f0f0;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .search-container {
+            display: flex;
+            margin: 20px auto 30px;
+            max-width: 600px;
+        }
+        
+        #search {
+            flex: 1;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 30px 0 0 30px;
+            font-size: 16px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+        }
+        
+        .search-btn {
+            background: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 0 30px 30px 0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: #ff5252;
+        }
+        
+        .categories {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+        }
+        
+        .category-btn {
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .category-btn:hover, .category-btn.active {
+            background: #4ecdc4;
+            color: white;
+            transform: translateY(-3px);
+        }
+        
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .algorithm-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .algorithm-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .card-header {
+            background: #4a69bd;
+            color: white;
+            padding: 15px 20px;
+        }
+        
+        .card-header h3 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .card-header .header-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .card-body {
+            padding: 20px;
+        }
+        
+        .card-body p {
+            margin-bottom: 15px;
+            color: #444;
+        }
+        
+        .code-block {
+            background: #2d3436;
+            color: #f1f1f1;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            margin: 15px 0;
+            overflow-x: auto;
+        }
+        
+        .complexity {
+            background: #ffeaa7;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            display: inline-block;
+            margin-top: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px 0;
+            color: white;
+            margin-top: 50px;
+            font-size: 1rem;
+        }
+        
+        @media (max-width: 768px) {
+            .algorithms-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>STL 算法大全</h1>
+            <p class="subtitle">C++标准模板库算法完整参考指南，包含详细说明、代码示例和时间复杂度分析</p>
+        </header>
+        
+        <div class="search-container">
+            <input type="text" id="search" placeholder="搜索算法 (例如: sort, find, transform...)" autocomplete="off">
+            <button class="search-btn">搜索</button>
+        </div>
+        
+        <div class="categories">
+            <button class="category-btn active">全部</button>
+<!--
+            <button class="category-btn">非修改序列操作</button>
+            <button class="category-btn">修改序列操作</button>
+            <button class="category-btn">排序操作</button>
+            <button class="category-btn">数值操作</button>-->
+        </div>
+        
+        <div class="algorithms-grid">
+            <!-- 算法卡片开始 -->
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::sort</h3>
+                    <div class="header-desc">快速排序算法</div>
+                </div>
+                <div class="card-body">
+                    <p>对范围 [first, last) 中的元素进行排序，默认按升序排序。</p>
+                    <div class="code-block">
+#include &lt;algorithm&gt;<br>
+#include &lt;vector&gt;<br><br>
+std::vector&lt;int&gt; v = {5, 3, 1, 4, 2};<br>
+std::sort(v.begin(), v.end());<br>
+// v 现在为 {1, 2, 3, 4, 5}
+                    </div>
+                    <div class="complexity">平均时间复杂度: O(n log n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::find</h3>
+                    <div class="header-desc">查找元素</div>
+                </div>
+                <div class="card-body">
+                    <p>在范围 [first, last) 中查找等于 value 的元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {10, 20, 30, 40};<br>
+auto it = std::find(v.begin(), v.end(), 30);<br>
+if (it != v.end()) {<br>
+&nbsp;&nbsp;std::cout << "找到元素: " << *it;<br>
+}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::transform</h3>
+                    <div class="header-desc">应用函数到范围</div>
+                </div>
+                <div class="card-body">
+                    <p>将一元操作应用于输入范围，并将结果存储在目标范围中。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; v2(4);<br>
+std::transform(v1.begin(), v1.end(), v2.begin(),<br>
+&nbsp;&nbsp;[](int n) { return n * n; });<br>
+// v2 现在为 {1, 4, 9, 16}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::accumulate</h3>
+                    <div class="header-desc">范围求和</div>
+                </div>
+                <div class="card-body">
+                    <p>计算范围内元素的累加和，或使用二元操作进行累积计算。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+int sum = std::accumulate(v.begin(), v.end(), 0);<br>
+// sum = 10<br><br>
+int product = std::accumulate(v.begin(), v.end(), 1,<br>
+&nbsp;&nbsp;[](int a, int b) { return a * b; });<br>
+// product = 24
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::copy</h3>
+                    <div class="header-desc">复制范围</div>
+                </div>
+                <div class="card-body">
+                    <p>将范围 [first, last) 中的元素复制到从 d_first 开始的另一范围。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; dest(4);<br>
+std::copy(src.begin(), src.end(), dest.begin());<br>
+// dest 现在为 {1, 2, 3, 4}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::remove</h3>
+                    <div class="header-desc">移除元素</div>
+                </div>
+                <div class="card-body">
+                    <p>从范围 [first, last) 中移除所有等于 value 的元素，但不改变容器大小。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 2, 5};<br>
+auto new_end = std::remove(v.begin(), v.end(), 2);<br>
+v.erase(new_end, v.end());<br>
+// v 现在为 {1, 3, 5}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::reverse</h3>
+                    <div class="header-desc">反转范围</div>
+                </div>
+                <div class="card-body">
+                    <p>反转范围 [first, last) 中元素的顺序。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::reverse(v.begin(), v.end());<br>
+// v 现在为 {4, 3, 2, 1}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::unique</h3>
+                    <div class="header-desc">删除连续重复元素</div>
+                </div>
+                <div class="card-body">
+                    <p>删除范围 [first, last) 中连续的重复元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 1, 2, 2, 3, 3, 3, 4};<br>
+auto last = std::unique(v.begin(), v.end());<br>
+v.erase(last, v.end());<br>
+// v 现在为 {1, 2, 3, 4}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::count</h3>
+                    <div class="header-desc">计数元素</div>
+                </div>
+                <div class="card-body">
+                    <p>返回范围 [first, last) 中等于 value 的元素数。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 2, 4, 2};<br>
+int count = std::count(v.begin(), v.end(), 2);<br>
+// count = 3
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::max_element</h3>
+                    <div class="header-desc">查找最大元素</div>
+                </div>
+                <div class="card-body">
+                    <p>返回范围 [first, last) 中最大元素的迭代器。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {3, 1, 4, 2, 5};<br>
+auto max_it = std::max_element(v.begin(), v.end());<br>
+std::cout << "最大值: " << *max_it;<br>
+// 输出: 最大值: 5
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::binary_search</h3>
+                    <div class="header-desc">二分查找</div>
+                </div>
+                <div class="card-body">
+                    <p>检查范围 [first, last) 中是否存在等价于 value 的元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5, 6, 7};<br>
+bool found = std::binary_search(v.begin(), v.end(), 4);<br>
+// found = true<br>
+bool not_found = std::binary_search(v.begin(), v.end(), 8);<br>
+// not_found = false
+                    </div>
+                    <div class="complexity">时间复杂度: O(log n)</div>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="card-header">
+                    <h3>std::fill</h3>
+                    <div class="header-desc">填充范围</div>
+                </div>
+                <div class="card-body">
+                    <p>将给定值复制赋值给范围 [first, last) 中的每个元素。</p>
+                    <div class="code-block">
+std::vector&lt;int&gt; v(5); // {0, 0, 0, 0, 0}<br>
+std::fill(v.begin(), v.end(), 10);<br>
+// v 现在为 {10, 10, 10, 10, 10}
+                    </div>
+                    <div class="complexity">时间复杂度: O(n)</div>
+                </div>
+            </div>
+            <div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::replace</h3>
+        <div class="header-desc">替换元素</div>
+    </div>
+    <div class="card-body">
+        <p>将范围 [first, last) 中所有等于 old_value 的元素替换为 new_value。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 2, 4};<br>
+std::replace(v.begin(), v.end(), 2, 9);<br>
+// v 现在为 {1, 9, 3, 9, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::rotate</h3>
+        <div class="header-desc">旋转范围</div>
+    </div>
+    <div class="card-body">
+        <p>将范围 [first, last) 中的元素旋转，使得 middle 成为新的第一个元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::rotate(v.begin(), v.begin() + 2, v.end());<br>
+// v 现在为 {3, 4, 5, 1, 2}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partition</h3>
+        <div class="header-desc">划分范围</div>
+    </div>
+    <div class="card-body">
+        <p>将满足谓词的元素置于不满足谓词的元素之前。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5, 6};<br>
+auto it = std::partition(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int i) { return i % 2 == 0; });<br>
+// v 可能为 {2, 4, 6, 1, 3, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::nth_element</h3>
+        <div class="header-desc">部分排序</div>
+    </div>
+    <div class="card-body">
+        <p>对范围部分排序，确保第n个元素是排序后该位置应有的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {5, 3, 1, 6, 4, 2};<br>
+std::nth_element(v.begin(), v.begin() + 2, v.end());<br>
+// v[2] 现在是3，且左侧元素≤3，右侧元素≥3
+        </div>
+        <div class="complexity">平均时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::all_of</h3>
+        <div class="header-desc">检查所有元素</div>
+    </div>
+    <div class="card-body">
+        <p>检查范围 [first, last) 中所有元素是否都满足谓词。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {2, 4, 6, 8};<br>
+bool allEven = std::all_of(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int i) { return i % 2 == 0; });<br>
+// allEven = true
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::inner_product</h3>
+        <div class="header-desc">内积计算</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个范围的内积（点积）或执行自定义操作。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; a = {1, 2, 3};<br>
+std::vector&lt;int&gt; b = {4, 5, 6};<br>
+int result = std::inner_product(a.begin(), a.end(),<br>
+&nbsp;&nbsp;b.begin(), 0);<br>
+// result = 1*4 + 2*5 + 3*6 = 32
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::set_intersection</h3>
+        <div class="header-desc">交集运算</div>
+    </div>
+    <div class="card-body">
+        <p>构造两个排序范围的交集。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; v2 = {3, 4, 5, 6};<br>
+std::vector&lt;int&gt; v_intersection;<br>
+std::set_intersection(v1.begin(), v1.end(),<br>
+&nbsp;&nbsp;v2.begin(), v2.end(),<br>
+&nbsp;&nbsp;std::back_inserter(v_intersection));<br>
+// v_intersection = {3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(2*(n+m))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::minmax_element</h3>
+        <div class="header-desc">查找最小和最大元素</div>
+    </div>
+    <div class="card-body">
+        <p>返回范围中最小和最大元素的迭代器。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {3, 1, 4, 2, 5};<br>
+auto [min, max] = std::minmax_element(v.begin(), v.end());<br>
+std::cout << "最小值: " << *min << ", 最大值: " << *max;<br>
+// 输出: 最小值: 1, 最大值: 5
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::adjacent_find</h3>
+        <div class="header-desc">查找相邻重复元素</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中搜索第一对相邻的重复元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 2, 3, 4, 4, 5};<br>
+auto it = std::adjacent_find(v.begin(), v.end());<br>
+if (it != v.end()) {<br>
+&nbsp;&nbsp;std::cout << "相邻重复: " << *it << " 和 " << *(it+1);<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::generate</h3>
+        <div class="header-desc">生成元素</div>
+    </div>
+    <div class="card-body">
+        <p>将函数生成的值赋给范围中的每个元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v(5);<br>
+int n = 1;<br>
+std::generate(v.begin(), v.end(), [&n]() {<br>
+&nbsp;&nbsp;return n++;<br>
+});<br>
+// v 现在为 {1, 2, 3, 4, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_sorted</h3>
+        <div class="header-desc">检查是否排序</div>
+    </div>
+    <div class="card-body">
+        <p>检查范围是否按升序排序。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; v2 = {4, 2, 1, 3};<br>
+bool sorted1 = std::is_sorted(v1.begin(), v1.end()); // true<br>
+bool sorted2 = std::is_sorted(v2.begin(), v2.end()); // false
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partial_sum</h3>
+        <div class="header-desc">部分和计算</div>
+    </div>
+    <div class="card-body">
+        <p>计算范围的前缀和。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; result(4);<br>
+std::partial_sum(v.begin(), v.end(), result.begin());<br>
+// result 现在为 {1, 3, 6, 10}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::copy_if</h3>
+        <div class="header-desc">条件复制</div>
+    </div>
+    <div class="card-body">
+        <p>复制范围中满足特定条件的元素到目标范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; dest;<br>
+std::copy_if(src.begin(), src.end(), std::back_inserter(dest),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+// dest 现在为 {2, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::merge</h3>
+        <div class="header-desc">合并排序范围</div>
+    </div>
+    <div class="card-body">
+        <p>合并两个已排序范围到一个新的排序范围中。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 3, 5};<br>
+std::vector&lt;int&gt; v2 = {2, 4, 6};<br>
+std::vector&lt;int&gt; merged(6);<br>
+std::merge(v1.begin(), v1.end(), v2.begin(), v2.end(), merged.begin());<br>
+// merged 现在为 {1, 2, 3, 4, 5, 6}
+        </div>
+        <div class="complexity">时间复杂度: O(n + m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::find_if</h3>
+        <div class="header-desc">条件查找</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中查找满足特定条件的第一个元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 3, 5, 7, 9};<br>
+auto it = std::find_if(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int n) { return n > 5; });<br>
+if (it != v.end()) {<br>
+&nbsp;&nbsp;std::cout << "找到大于5的元素: " << *it;<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::for_each</h3>
+        <div class="header-desc">对每个元素应用函数</div>
+    </div>
+    <div class="card-body">
+        <p>对范围中的每个元素应用指定的函数。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::for_each(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int& n) { n *= n; });<br>
+// v 现在为 {1, 4, 9, 16}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::iota</h3>
+        <div class="header-desc">填充递增序列</div>
+    </div>
+    <div class="card-body">
+        <p>用连续递增的值填充范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v(5);<br>
+std::iota(v.begin(), v.end(), 10);<br>
+// v 现在为 {10, 11, 12, 13, 14}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::mismatch</h3>
+        <div class="header-desc">查找不匹配点</div>
+    </div>
+    <div class="card-body">
+        <p>返回两个范围中第一个不匹配的元素对。</p>
+        <div class="code-block">
+std::string s1 = "hello world";<br>
+std::string s2 = "hello there";<br>
+auto [it1, it2] = std::mismatch(s1.begin(), s1.end(), s2.begin());<br>
+// *it1 = 'w', *it2 = 't'
+        </div>
+        <div class="complexity">时间复杂度: O(min(n, m))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::set_difference</h3>
+        <div class="header-desc">差集运算</div>
+    </div>
+    <div class="card-body">
+        <p>构造两个排序范围的差集（在第一个范围但不在第二个范围中）。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; v2 = {3, 4, 5, 6, 7};<br>
+std::vector&lt;int&gt; diff;<br>
+std::set_difference(v1.begin(), v1.end(),<br>
+&nbsp;&nbsp;v2.begin(), v2.end(), std::back_inserter(diff));<br>
+// diff 现在为 {1, 2}
+        </div>
+        <div class="complexity">时间复杂度: O(2*(n+m))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::shuffle</h3>
+        <div class="header-desc">随机重排</div>
+    </div>
+    <div class="card-body">
+        <p>使用随机数生成器对范围中的元素进行随机重排。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::random_device rd;<br>
+std::mt19937 g(rd());<br>
+std::shuffle(v.begin(), v.end(), g);<br>
+// v 可能为 {3, 1, 5, 2, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::stable_sort</h3>
+        <div class="header-desc">稳定排序</div>
+    </div>
+    <div class="card-body">
+        <p>对范围进行排序，同时保持相等元素的相对顺序。</p>
+        <div class="code-block">
+std::vector&lt;std::pair&lt;int, char&gt;&gt; v = {<br>
+&nbsp;&nbsp;{2, 'b'}, {1, 'a'}, {2, 'c'}, {1, 'd'}};<br>
+std::stable_sort(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](auto a, auto b) { return a.first < b.first; });<br>
+// 排序后: {1, 'a'}, {1, 'd'}, {2, 'b'}, {2, 'c'}
+        </div>
+        <div class="complexity">时间复杂度: O(n log² n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::includes</h3>
+        <div class="header-desc">检查子集</div>
+    </div>
+    <div class="card-body">
+        <p>检查一个排序范围是否包含另一个排序范围的所有元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; v2 = {2, 4};<br>
+bool result = std::includes(v1.begin(), v1.end(),<br>
+&nbsp;&nbsp;v2.begin(), v2.end());<br>
+// result = true
+        </div>
+        <div class="complexity">时间复杂度: O(n + m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::remove_if</h3>
+        <div class="header-desc">条件移除</div>
+    </div>
+    <div class="card-body">
+        <p>从范围中移除满足特定条件的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5, 6};<br>
+auto new_end = std::remove_if(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+v.erase(new_end, v.end());<br>
+// v 现在为 {1, 3, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::unique_copy</h3>
+        <div class="header-desc">复制唯一元素</div>
+    </div>
+    <div class="card-body">
+        <p>从范围中复制元素，忽略连续的重复项。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 1, 2, 2, 3, 3, 3, 4};<br>
+std::vector&lt;int&gt; dest;<br>
+std::unique_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest));<br>
+// dest 现在为 {1, 2, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::lexicographical_compare</h3>
+        <div class="header-desc">字典序比较</div>
+    </div>
+    <div class="card-body">
+        <p>检查第一个范围是否在字典序上小于第二个范围。</p>
+        <div class="code-block">
+std::string s1 = "apple";<br>
+std::string s2 = "banana";<br>
+bool result = std::lexicographical_compare(<br>
+&nbsp;&nbsp;s1.begin(), s1.end(), s2.begin(), s2.end());<br>
+// result = true
+        </div>
+        <div class="complexity">时间复杂度: O(min(n, m))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::equal_range</h3>
+        <div class="header-desc">相等元素范围</div>
+    </div>
+    <div class="card-body">
+        <p>在排序范围中查找等于给定值的子范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 3, 3, 4, 5};<br>
+auto [lower, upper] = std::equal_range(v.begin(), v.end(), 3);<br>
+std::cout << "3 的数量: " << std::distance(lower, upper);<br>
+// 输出: 3 的数量: 3
+        </div>
+        <div class="complexity">时间复杂度: O(log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::inplace_merge</h3>
+        <div class="header-desc">原地合并</div>
+    </div>
+    <div class="card-body">
+        <p>合并两个已排序的子范围为一个排序范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 3, 5, 2, 4, 6};<br>
+auto mid = v.begin() + 3;<br>
+std::inplace_merge(v.begin(), mid, v.end());<br>
+// v 现在为 {1, 2, 3, 4, 5, 6}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_heap</h3>
+        <div class="header-desc">检查堆结构</div>
+    </div>
+    <div class="card-body">
+        <p>检查范围是否形成堆结构。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; heap = {9, 5, 4, 1, 3, 2};<br>
+std::vector&lt;int&gt; not_heap = {1, 2, 3, 4, 5};<br>
+bool isHeap1 = std::is_heap(heap.begin(), heap.end()); // true<br>
+bool isHeap2 = std::is_heap(not_heap.begin(), not_heap.end()); // false
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::make_heap</h3>
+        <div class="header-desc">创建堆</div>
+    </div>
+    <div class="card-body">
+        <p>将范围转化为堆结构。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {3, 1, 4, 1, 5, 9};<br>
+std::make_heap(v.begin(), v.end());<br>
+// v 现在为堆: {9, 5, 4, 1, 1, 3}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::push_heap</h3>
+        <div class="header-desc">向堆添加元素</div>
+    </div>
+    <div class="card-body">
+        <p>将范围末尾的元素插入堆中。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {9, 5, 4, 1, 1, 3}; // 堆<br>
+v.push_back(7);<br>
+std::push_heap(v.begin(), v.end());<br>
+// v 现在为 {9, 5, 7, 1, 1, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::pop_heap</h3>
+        <div class="header-desc">从堆中移除最大元素</div>
+    </div>
+    <div class="card-body">
+        <p>将堆的最大元素移动到范围末尾。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {9, 5, 4, 1, 1, 3};<br>
+std::pop_heap(v.begin(), v.end());<br>
+int max = v.back();<br>
+v.pop_back();<br>
+// max = 9, v 现在为 {5, 3, 4, 1, 1}
+        </div>
+        <div class="complexity">时间复杂度: O(log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::sort_heap</h3>
+        <div class="header-desc">堆排序</div>
+    </div>
+    <div class="card-body">
+        <p>将堆转换为排序范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {9, 5, 4, 1, 1, 3};<br>
+std::make_heap(v.begin(), v.end());<br>
+std::sort_heap(v.begin(), v.end());<br>
+// v 现在为 {1, 1, 3, 4, 5, 9}
+        </div>
+        <div class="complexity">时间复杂度: O(n log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::clamp</h3>
+        <div class="header-desc">夹紧值</div>
+    </div>
+    <div class="card-body">
+        <p>将值限制在给定的范围内。</p>
+        <div class="code-block">
+int value = 15;<br>
+int clamped = std::clamp(value, 0, 10);<br>
+// clamped = 10<br><br>
+value = -5;<br>
+clamped = std::clamp(value, 0, 10);<br>
+// clamped = 0
+        </div>
+        <div class="complexity">时间复杂度: O(1)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::sample</h3>
+        <div class="header-desc">随机抽样</div>
+    </div>
+    <div class="card-body">
+        <p>从范围中随机选择n个元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; population = {1, 2, 3, 4, 5, 6, 7, 8, 9};<br>
+std::vector&lt;int&gt; samples(3);<br>
+std::random_device rd;<br>
+std::mt19937 gen(rd());<br>
+std::sample(population.begin(), population.end(),<br>
+&nbsp;&nbsp;samples.begin(), 3, gen);<br>
+// samples 可能为 {2, 5, 8}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::reduce</h3>
+        <div class="header-desc">并行累加</div>
+    </div>
+    <div class="card-body">
+        <p>类似accumulate，但可并行执行。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+int sum = std::reduce(v.begin(), v.end(), 0);<br>
+// sum = 15<br><br>
+int product = std::reduce(v.begin(), v.end(), 1,<br>
+&nbsp;&nbsp;[](int a, int b) { return a * b; });<br>
+// product = 120
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::exclusive_scan</h3>
+        <div class="header-desc">排除式扫描</div>
+    </div>
+    <div class="card-body">
+        <p>计算前缀和，每个结果不包含当前元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; result(4);<br>
+std::exclusive_scan(v.begin(), v.end(), result.begin(), 0);<br>
+// result 现在为 {0, 1, 3, 6}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::transform_reduce</h3>
+        <div class="header-desc">变换后累加</div>
+    </div>
+    <div class="card-body">
+        <p>先应用变换，然后累加结果。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+int sum_squares = std::transform_reduce(v.begin(), v.end(),<br>
+&nbsp;&nbsp;0, std::plus&lt;&gt;(),<br>
+&nbsp;&nbsp;[](int x) { return x * x; });<br>
+// sum_squares = 1+4+9+16 = 30
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::set_symmetric_difference</h3>
+        <div class="header-desc">对称差集</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个排序范围的对称差集（在任一范围但不在两个范围中）。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; v2 = {3, 4, 5, 6};<br>
+std::vector&lt;int&gt; sym_diff;<br>
+std::set_symmetric_difference(v1.begin(), v1.end(),<br>
+&nbsp;&nbsp;v2.begin(), v2.end(), std::back_inserter(sym_diff));<br>
+// sym_diff 现在为 {1, 2, 5, 6}
+        </div>
+        <div class="complexity">时间复杂度: O(2*(n+m))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_permutation</h3>
+        <div class="header-desc">检查排列</div>
+    </div>
+    <div class="card-body">
+        <p>检查一个范围是否是另一个范围的排列。</p>
+        <div class="code-block">
+std::string s1 = "abcd";<br>
+std::string s2 = "dcba";<br>
+bool result = std::is_permutation(s1.begin(), s1.end(), s2.begin());<br>
+// result = true
+        </div>
+        <div class="complexity">时间复杂度: O(n²)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::next_permutation</h3>
+        <div class="header-desc">下一个排列</div>
+    </div>
+    <div class="card-body">
+        <p>将范围变换为下一个字典序排列。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3};<br>
+do {<br>
+&nbsp;&nbsp;// 打印当前排列<br>
+} while (std::next_permutation(v.begin(), v.end()));<br>
+// 输出所有排列: 123, 132, 213, 231, 312, 321
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::prev_permutation</h3>
+        <div class="header-desc">上一个排列</div>
+    </div>
+    <div class="card-body">
+        <p>将范围变换为上一个字典序排列。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {3, 2, 1};<br>
+do {<br>
+&nbsp;&nbsp;// 打印当前排列<br>
+} while (std::prev_permutation(v.begin(), v.end()));<br>
+// 输出所有排列: 321, 312, 231, 213, 132, 123
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partition_point</h3>
+        <div class="header-desc">划分点查找</div>
+    </div>
+    <div class="card-body">
+        <p>在划分范围中查找划分点。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {2, 4, 6, 1, 3, 5}; // 已划分<br>
+auto it = std::partition_point(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+std::cout << "划分点: " << *it; // 输出: 划分点: 1
+        </div>
+        <div class="complexity">时间复杂度: O(log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::rotate_copy</h3>
+        <div class="header-desc">旋转并复制</div>
+    </div>
+    <div class="card-body">
+        <p>旋转范围并将结果复制到目标范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; dest(5);<br>
+std::rotate_copy(src.begin(), src.begin() + 2,<br>
+&nbsp;&nbsp;src.end(), dest.begin());<br>
+// dest 现在为 {3, 4, 5, 1, 2}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::shift_left</h3>
+        <div class="header-desc">左移元素</div>
+    </div>
+    <div class="card-body">
+        <p>将范围中的元素向左移动。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::shift_left(v.begin(), v.end(), 2);<br>
+// v 现在为 {3, 4, 5, 4, 5} (最后两个元素未定义)
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::shift_right</h3>
+        <div class="header-desc">右移元素</div>
+    </div>
+    <div class="card-body">
+        <p>将范围中的元素向右移动。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::shift_right(v.begin(), v.end(), 2);<br>
+// v 现在为 {1, 2, 1, 2, 3} (前两个元素未定义)
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::gcd</h3>
+        <div class="header-desc">最大公约数</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个整数的最大公约数。</p>
+        <div class="code-block">
+int a = 60, b = 48;<br>
+int result = std::gcd(a, b);<br>
+// result = 12
+        </div>
+        <div class="complexity">时间复杂度: O(log(min(a,b)))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::lcm</h3>
+        <div class="header-desc">最小公倍数</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个整数的最小公倍数。</p>
+        <div class="code-block">
+int a = 6, b = 8;<br>
+int result = std::lcm(a, b);<br>
+// result = 24
+        </div>
+        <div class="complexity">时间复杂度: O(log(min(a,b)))</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::adjacent_difference</h3>
+        <div class="header-desc">相邻差计算</div>
+    </div>
+    <div class="card-body">
+        <p>计算范围中相邻元素的差。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {2, 4, 6, 8, 10};<br>
+std::vector&lt;int&gt; result(5);<br>
+std::adjacent_difference(v.begin(), v.end(), result.begin());<br>
+// result 现在为 {2, 2, 2, 2, 2}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::search</h3>
+        <div class="header-desc">子序列搜索</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中搜索子序列的出现。</p>
+        <div class="code-block">
+std::string text = "the quick brown fox jumps over the lazy dog";<br>
+std::string pattern = "fox";<br>
+auto it = std::search(text.begin(), text.end(),<br>
+&nbsp;&nbsp;pattern.begin(), pattern.end());<br>
+if (it != text.end()) {<br>
+&nbsp;&nbsp;std::cout << "找到 'fox'";<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(n*m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::search_n</h3>
+        <div class="header-desc">重复元素搜索</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中搜索n个连续等于值的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 3, 3, 4, 5};<br>
+auto it = std::search_n(v.begin(), v.end(), 3, 3);<br>
+if (it != v.end()) {<br>
+&nbsp;&nbsp;std::cout << "找到3个连续的3";<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::find_first_of</h3>
+        <div class="header-desc">查找首次出现</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中搜索另一个范围中的任意元素的首次出现。</p>
+        <div class="code-block">
+std::string text = "Hello World";<br>
+std::string vowels = "aeiouAEIOU";<br>
+auto it = std::find_first_of(text.begin(), text.end(),<br>
+&nbsp;&nbsp;vowels.begin(), vowels.end());<br>
+if (it != text.end()) {<br>
+&nbsp;&nbsp;std::cout << "第一个元音: " << *it; // 'e'<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(n*m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::copy_backward</h3>
+        <div class="header-desc">向后复制</div>
+    </div>
+    <div class="card-body">
+        <p>从范围的末尾开始复制元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; dest(7);<br>
+std::copy_backward(src.begin(), src.end(), dest.end());<br>
+// dest 现在为 {0, 0, 1, 2, 3, 4, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::move</h3>
+        <div class="header-desc">移动元素</div>
+    </div>
+    <div class="card-body">
+        <p>将元素从一个范围移动到另一个范围。</p>
+        <div class="code-block">
+std::vector&lt;std::string&gt; src = {"apple", "banana", "cherry"};<br>
+std::vector&lt;std::string&gt; dest(3);<br>
+std::move(src.begin(), src.end(), dest.begin());<br>
+// src 现在为空字符串，dest 包含原始字符串
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::move_backward</h3>
+        <div class="header-desc">向后移动</div>
+    </div>
+    <div class="card-body">
+        <p>从范围的末尾开始移动元素。</p>
+        <div class="code-block">
+std::vector&lt;std::string&gt; src = {"apple", "banana", "cherry"};<br>
+std::vector&lt;std::string&gt; dest(5);<br>
+std::move_backward(src.begin(), src.end(), dest.end());<br>
+// dest: ["", "", "apple", "banana", "cherry"]
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::fill_n</h3>
+        <div class="header-desc">填充n个元素</div>
+    </div>
+    <div class="card-body">
+        <p>将值赋给范围的前n个元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v(5); // {0, 0, 0, 0, 0}<br>
+std::fill_n(v.begin(), 3, 10);<br>
+// v 现在为 {10, 10, 10, 0, 0}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::generate_n</h3>
+        <div class="header-desc">生成n个元素</div>
+    </div>
+    <div class="card-body">
+        <p>将函数生成的值赋给范围的前n个元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v(5);<br>
+int n = 1;<br>
+std::generate_n(v.begin(), 3, [&n]() { return n++; });<br>
+// v 现在为 {1, 2, 3, 0, 0}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::remove_copy</h3>
+        <div class="header-desc">复制时移除</div>
+    </div>
+    <div class="card-body">
+        <p>复制范围中的元素，但跳过等于特定值的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 2, 4};<br>
+std::vector&lt;int&gt; dest;<br>
+std::remove_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest), 2);<br>
+// dest 现在为 {1, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::replace_copy</h3>
+        <div class="header-desc">复制时替换</div>
+    </div>
+    <div class="card-body">
+        <p>复制范围中的元素，同时替换特定值。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 2, 4};<br>
+std::vector&lt;int&gt; dest;<br>
+std::replace_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest), 2, 9);<br>
+// dest 现在为 {1, 9, 3, 9, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::swap_ranges</h3>
+        <div class="header-desc">交换范围</div>
+    </div>
+    <div class="card-body">
+        <p>交换两个范围中的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; v2 = {9, 8, 7, 6};<br>
+std::swap_ranges(v1.begin(), v1.end(), v2.begin());<br>
+// v1: {9, 8, 7, 6}, v2: {1, 2, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_partitioned</h3>
+        <div class="header-desc">检查划分</div>
+    </div>
+    <div class="card-body">
+        <p>检查范围是否被划分为满足谓词的元素在前。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {2, 4, 6, 1, 3, 5};<br>
+bool partitioned = std::is_partitioned(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+// partitioned = true
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::stable_partition</h3>
+        <div class="header-desc">稳定划分</div>
+    </div>
+    <div class="card-body">
+        <p>划分范围，同时保持相等元素的相对顺序。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5, 6};<br>
+auto it = std::stable_partition(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int i) { return i % 2 == 0; });<br>
+// v: {2, 4, 6, 1, 3, 5} (保持原始顺序)
+        </div>
+        <div class="complexity">时间复杂度: O(n log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partial_sort_copy</h3>
+        <div class="header-desc">部分排序并复制</div>
+    </div>
+    <div class="card-body">
+        <p>对范围部分排序并将结果复制到目标范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {5, 3, 1, 6, 4, 2};<br>
+std::vector&lt;int&gt; dest(3);<br>
+std::partial_sort_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;dest.begin(), dest.end());<br>
+// dest 现在为 {1, 2, 3}
+        </div>
+        <div class="complexity">时间复杂度: O(n log k)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_sorted_until</h3>
+        <div class="header-desc">查找排序结束点</div>
+    </div>
+    <div class="card-body">
+        <p>查找范围中第一个破坏排序的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 5, 4, 6};<br>
+auto it = std::is_sorted_until(v.begin(), v.end());<br>
+std::cout << "排序结束于: " << *it; // 输出: 4
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partition_copy</h3>
+        <div class="header-desc">划分并复制</div>
+    </div>
+    <div class="card-body">
+        <p>将范围划分为两个范围，同时复制元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4, 5, 6};<br>
+std::vector&lt;int&gt; even, odd;<br>
+std::partition_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(even), std::back_inserter(odd),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+// even: {2, 4, 6}, odd: {1, 3, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::midpoint</h3>
+        <div class="header-desc">中点计算</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个数字的中点，避免溢出。</p>
+        <div class="code-block">
+int a = 100, b = 200;<br>
+int mid = std::midpoint(a, b); // 150<br><br>
+float x = 1e10f, y = 1e20f;<br>
+float mid_float = std::midpoint(x, y); // 安全计算
+        </div>
+        <div class="complexity">时间复杂度: O(1)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::lerp</h3>
+        <div class="header-desc">线性插值</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个值之间的线性插值。</p>
+        <div class="code-block">
+float a = 10.0f, b = 20.0f;<br>
+float interpolated = std::lerp(a, b, 0.5f); // 15.0f<br><br>
+// 动画应用：t从0到1变化<br>
+for (float t = 0; t <= 1; t += 0.1f) {<br>
+&nbsp;&nbsp;float value = std::lerp(start, end, t);<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(1)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::sort</h3>
+        <div class="header-desc">范围排序</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的排序算法。</p>
+        <div class="code-block">
+#include &lt;ranges&gt;<br>
+#include &lt;algorithm&gt;<br><br>
+std::vector&lt;int&gt; v = {5, 3, 1, 4, 2};<br>
+std::ranges::sort(v);<br>
+// v 现在为 {1, 2, 3, 4, 5}<br><br>
+// 使用投影<br>
+std::vector&lt;std::string&gt; words = {"apple", "banana", "cherry"};<br>
+std::ranges::sort(words, {}, &std::string::size);<br>
+// 按长度排序: {"apple", "cherry", "banana"}
+        </div>
+        <div class="complexity">平均时间复杂度: O(n log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::transform</h3>
+        <div class="header-desc">变换视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的惰性变换操作。</p>
+        <div class="code-block">
+#include &lt;ranges&gt;<br><br>
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+auto squared = v | std::views::transform([](int n) {<br>
+&nbsp;&nbsp;return n * n;<br>
+});<br><br>
+for (int n : squared) {<br>
+&nbsp;&nbsp;std::cout << n << " "; // 1, 4, 9, 16, 25<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::filter</h3>
+        <div class="header-desc">过滤视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的惰性过滤操作。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+auto even = v | std::views::filter([](int n) {<br>
+&nbsp;&nbsp;return n % 2 == 0;<br>
+});<br><br>
+for (int n : even) {<br>
+&nbsp;&nbsp;std::cout << n << " "; // 2, 4<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::adjacent_difference</h3>
+        <div class="header-desc">相邻差计算</div>
+    </div>
+    <div class="card-body">
+        <p>计算范围中相邻元素的差。</p>
+        <div class="code-block">
+std::vector<int> v = {2, 4, 6, 8, 10};<br>
+std::vector<int> result(5);<br>
+std::adjacent_difference(v.begin(), v.end(), result.begin());<br>
+// result: {2, 2, 2, 2, 2}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::search</h3>
+        <div class="header-desc">子序列搜索</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中搜索子序列的出现。</p>
+        <div class="code-block">
+std::string text = "the quick brown fox jumps over the lazy dog";<br>
+std::string pattern = "fox";<br>
+auto it = std::search(text.begin(), text.end(),<br>
+&nbsp;&nbsp;pattern.begin(), pattern.end());<br>
+// it指向"fox"的开头
+        </div>
+        <div class="complexity">时间复杂度: O(n*m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::search_n</h3>
+        <div class="header-desc">重复元素搜索</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中搜索n个连续等于值的元素。</p>
+        <div class="code-block">
+std::vector<int> v = {1, 2, 3, 3, 3, 4, 5};<br>
+auto it = std::search_n(v.begin(), v.end(), 3, 3);<br>
+// it指向第一个3的位置
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::find_first_of</h3>
+        <div class="header-desc">查找首次出现</div>
+    </div>
+    <div class="card-body">
+        <p>在范围中搜索另一个范围中的任意元素的首次出现。</p>
+        <div class="code-block">
+std::string text = "Hello World";<br>
+std::string vowels = "aeiouAEIOU";<br>
+auto it = std::find_first_of(text.begin(), text.end(),<br>
+&nbsp;&nbsp;vowels.begin(), vowels.end());<br>
+// it指向'e'
+        </div>
+        <div class="complexity">时间复杂度: O(n*m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::copy_backward</h3>
+        <div class="header-desc">向后复制</div>
+    </div>
+    <div class="card-body">
+        <p>从范围的末尾开始复制元素。</p>
+        <div class="code-block">
+std::vector<int> src = {1, 2, 3, 4, 5};<br>
+std::vector<int> dest(7);<br>
+std::copy_backward(src.begin(), src.end(), dest.end());<br>
+// dest: {0, 0, 1, 2, 3, 4, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::move</h3>
+        <div class="header-desc">移动元素</div>
+    </div>
+    <div class="card-body">
+        <p>将元素从一个范围移动到另一个范围。</p>
+        <div class="code-block">
+std::vector<std::string> src = {"apple", "banana", "cherry"};<br>
+std::vector<std::string> dest(3);<br>
+std::move(src.begin(), src.end(), dest.begin());<br>
+// src现在为空字符串，dest包含原始字符串
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::move_backward</h3>
+        <div class="header-desc">向后移动</div>
+    </div>
+    <div class="card-body">
+        <p>从范围的末尾开始移动元素。</p>
+        <div class="code-block">
+std::vector<std::string> src = {"apple", "banana", "cherry"};<br>
+std::vector<std::string> dest(5);<br>
+std::move_backward(src.begin(), src.end(), dest.end());<br>
+// dest: ["", "", "apple", "banana", "cherry"]
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::fill_n</h3>
+        <div class="header-desc">填充n个元素</div>
+    </div>
+    <div class="card-body">
+        <p>将值赋给范围的前n个元素。</p>
+        <div class="code-block">
+std::vector<int> v(5); // {0, 0, 0, 0, 0}<br>
+std::fill_n(v.begin(), 3, 10);<br>
+// v: {10, 10, 10, 0, 0}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::generate_n</h3>
+        <div class="header-desc">生成n个元素</div>
+    </div>
+    <div class="card-body">
+        <p>将函数生成的值赋给范围的前n个元素。</p>
+        <div class="code-block">
+std::vector<int> v(5);<br>
+int n = 1;<br>
+std::generate_n(v.begin(), 3, [&n]() { return n++; });<br>
+// v: {1, 2, 3, 0, 0}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::remove_copy</h3>
+        <div class="header-desc">复制时移除</div>
+    </div>
+    <div class="card-body">
+        <p>复制范围中的元素，但跳过等于特定值的元素。</p>
+        <div class="code-block">
+std::vector<int> src = {1, 2, 3, 2, 4};<br>
+std::vector<int> dest;<br>
+std::remove_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest), 2);<br>
+// dest: {1, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::replace_copy</h3>
+        <div class="header-desc">复制时替换</div>
+    </div>
+    <div class="card-body">
+        <p>复制范围中的元素，同时替换特定值。</p>
+        <div class="code-block">
+std::vector<int> src = {1, 2, 3, 2, 4};<br>
+std::vector<int> dest;<br>
+std::replace_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest), 2, 9);<br>
+// dest: {1, 9, 3, 9, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::swap_ranges</h3>
+        <div class="header-desc">交换范围</div>
+    </div>
+    <div class="card-body">
+        <p>交换两个范围中的元素。</p>
+        <div class="code-block">
+std::vector<int> v1 = {1, 2, 3, 4};<br>
+std::vector<int> v2 = {9, 8, 7, 6};<br>
+std::swap_ranges(v1.begin(), v1.end(), v2.begin());<br>
+// v1: {9, 8, 7, 6}, v2: {1, 2, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_partitioned</h3>
+        <div class="header-desc">检查划分</div>
+    </div>
+    <div class="card-body">
+        <p>检查范围是否被划分为满足谓词的元素在前。</p>
+        <div class="code-block">
+std::vector<int> v = {2, 4, 6, 1, 3, 5};<br>
+bool partitioned = std::is_partitioned(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+// partitioned = true
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::stable_partition</h3>
+        <div class="header-desc">稳定划分</div>
+    </div>
+    <div class="card-body">
+        <p>划分范围，同时保持相等元素的相对顺序。</p>
+        <div class="code-block">
+std::vector<int> v = {1, 2, 3, 4, 5, 6};<br>
+auto it = std::stable_partition(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int i) { return i % 2 == 0; });<br>
+// v: {2, 4, 6, 1, 3, 5} (保持原始顺序)
+        </div>
+        <div class="complexity">时间复杂度: O(n log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partial_sort_copy</h3>
+        <div class="header-desc">部分排序并复制</div>
+    </div>
+    <div class="card-body">
+        <p>对范围部分排序并将结果复制到目标范围。</p>
+        <div class="code-block">
+std::vector<int> src = {5, 3, 1, 6, 4, 2};<br>
+std::vector<int> dest(3);<br>
+std::partial_sort_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;dest.begin(), dest.end());<br>
+// dest: {1, 2, 3}
+        </div>
+        <div class="complexity">时间复杂度: O(n log k)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_sorted_until</h3>
+        <div class="header-desc">查找排序结束点</div>
+    </div>
+    <div class="card-body">
+        <p>查找范围中第一个破坏排序的元素。</p>
+        <div class="code-block">
+std::vector<int> v = {1, 2, 3, 5, 4, 6};<br>
+auto it = std::is_sorted_until(v.begin(), v.end());<br>
+// *it = 4
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partition_copy</h3>
+        <div class="header-desc">划分并复制</div>
+    </div>
+    <div class="card-body">
+        <p>将范围划分为两个范围，同时复制元素。</p>
+        <div class="code-block">
+std::vector<int> src = {1, 2, 3, 4, 5, 6};<br>
+std::vector<int> even, odd;<br>
+std::partition_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(even), std::back_inserter(odd),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+// even: {2, 4, 6}, odd: {1, 3, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::midpoint</h3>
+        <div class="header-desc">中点计算</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个数字的中点，避免溢出。</p>
+        <div class="code-block">
+int a = 100, b = 200;<br>
+int mid = std::midpoint(a, b); // 150<br><br>
+float x = 1e10f, y = 1e20f;<br>
+float mid_float = std::midpoint(x, y); // 安全计算
+        </div>
+        <div class="complexity">时间复杂度: O(1)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::lerp</h3>
+        <div class="header-desc">线性插值</div>
+    </div>
+    <div class="card-body">
+        <p>计算两个值之间的线性插值。</p>
+        <div class="code-block">
+float a = 10.0f, b = 20.0f;<br>
+float interpolated = std::lerp(a, b, 0.5f); // 15.0f<br><br>
+// 动画应用：t从0到1变化<br>
+for (float t = 0; t <= 1; t += 0.1f) {<br>
+&nbsp;&nbsp;float value = std::lerp(start, end, t);<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(1)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::sort</h3>
+        <div class="header-desc">范围排序</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的排序算法。</p>
+        <div class="code-block">
+#include &lt;ranges&gt;<br>
+#include &lt;algorithm&gt;<br><br>
+std::vector<int> v = {5, 3, 1, 4, 2};<br>
+std::ranges::sort(v);<br>
+// v: {1, 2, 3, 4, 5}<br><br>
+// 使用投影<br>
+std::vector<std::string> words = {"apple", "banana", "cherry"};<br>
+std::ranges::sort(words, {}, &std::string::size);<br>
+// 按长度排序: {"apple", "cherry", "banana"}
+        </div>
+        <div class="complexity">平均时间复杂度: O(n log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::transform</h3>
+        <div class="header-desc">变换视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的惰性变换操作。</p>
+        <div class="code-block">
+#include &lt;ranges&gt;<br><br>
+std::vector<int> v = {1, 2, 3, 4, 5};<br>
+auto squared = v | std::views::transform([](int n) {<br>
+&nbsp;&nbsp;return n * n;<br>
+});<br><br>
+for (int n : squared) {<br>
+&nbsp;&nbsp;std::cout << n << " "; // 1, 4, 9, 16, 25<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::filter</h3>
+        <div class="header-desc">过滤视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的惰性过滤操作。</p>
+        <div class="code-block">
+std::vector<int> v = {1, 2, 3, 4, 5};<br>
+auto even = v | std::views::filter([](int n) {<br>
+&nbsp;&nbsp;return n % 2 == 0;<br>
+});<br><br>
+for (int n : even) {<br>
+&nbsp;&nbsp;std::cout << n << " "; // 2, 4<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::exclusive_scan</h3>
+        <div class="header-desc">排除式扫描</div>
+    </div>
+    <div class="card-body">
+        <p>计算前缀和，每个结果不包含当前元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; result(4);<br>
+std::exclusive_scan(v.begin(), v.end(), result.begin(), 0);<br>
+// result: {0, 1, 3, 6}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::inclusive_scan</h3>
+        <div class="header-desc">包含式扫描</div>
+    </div>
+    <div class="card-body">
+        <p>计算前缀和，每个结果包含当前元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; result(4);<br>
+std::inclusive_scan(v.begin(), v.end(), result.begin());<br>
+// result: {1, 3, 6, 10}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::transform_exclusive_scan</h3>
+        <div class="header-desc">变换后排除式扫描</div>
+    </div>
+    <div class="card-body">
+        <p>先变换元素，然后计算排除式扫描。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; result(4);<br>
+std::transform_exclusive_scan(v.begin(), v.end(), result.begin(), 0,<br>
+&nbsp;&nbsp;std::plus&lt;&gt;(), [](int x) { return x * x; });<br>
+// result: {0, 1, 5, 14}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::transform_inclusive_scan</h3>
+        <div class="header-desc">变换后包含式扫描</div>
+    </div>
+    <div class="card-body">
+        <p>先变换元素，然后计算包含式扫描。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+std::vector&lt;int&gt; result(4);<br>
+std::transform_inclusive_scan(v.begin(), v.end(), result.begin(),<br>
+&nbsp;&nbsp;std::plus&lt;&gt;(), [](int x) { return x * x; });<br>
+// result: {1, 5, 14, 30}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::sample</h3>
+        <div class="header-desc">随机抽样</div>
+    </div>
+    <div class="card-body">
+        <p>从范围中随机选择n个元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; population = {1, 2, 3, 4, 5, 6, 7, 8, 9};<br>
+std::vector&lt;int&gt; samples(3);<br>
+std::random_device rd;<br>
+std::mt19937 gen(rd());<br>
+std::sample(population.begin(), population.end(),<br>
+&nbsp;&nbsp;samples.begin(), 3, gen);<br>
+// samples 可能为 {2, 5, 8}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::reduce</h3>
+        <div class="header-desc">并行累加</div>
+    </div>
+    <div class="card-body">
+        <p>类似accumulate，但可并行执行。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+int sum = std::reduce(v.begin(), v.end()); // 15<br>
+int product = std::reduce(v.begin(), v.end(), 1,<br>
+&nbsp;&nbsp;[](int a, int b) { return a * b; }); // 120
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::transform_reduce</h3>
+        <div class="header-desc">变换后累加</div>
+    </div>
+    <div class="card-body">
+        <p>先应用变换，然后累加结果。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+int sum_squares = std::transform_reduce(v.begin(), v.end(),<br>
+&nbsp;&nbsp;0, std::plus&lt;&gt;(),<br>
+&nbsp;&nbsp;[](int x) { return x * x; });<br>
+// sum_squares = 1+4+9+16 = 30
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::shift_left</h3>
+        <div class="header-desc">左移元素</div>
+    </div>
+    <div class="card-body">
+        <p>将范围中的元素向左移动。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::shift_left(v.begin(), v.end(), 2);<br>
+// v: {3, 4, 5, 4, 5} (最后两个元素未定义)
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::shift_right</h3>
+        <div class="header-desc">右移元素</div>
+    </div>
+    <div class="card-body">
+        <p>将范围中的元素向右移动。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::shift_right(v.begin(), v.end(), 2);<br>
+// v: {1, 2, 1, 2, 3} (前两个元素未定义)
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_sorted_until</h3>
+        <div class="header-desc">查找排序结束点</div>
+    </div>
+    <div class="card-body">
+        <p>查找范围中第一个破坏排序的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 5, 4, 6};<br>
+auto it = std::is_sorted_until(v.begin(), v.end());<br>
+// *it = 4
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::is_heap_until</h3>
+        <div class="header-desc">查找堆结束点</div>
+    </div>
+    <div class="card-body">
+        <p>查找范围中第一个破坏堆结构的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {9, 5, 4, 2, 3, 1, 6}; // 6破坏了堆<br>
+auto it = std::is_heap_until(v.begin(), v.end());<br>
+// it指向6
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::stable_sort</h3>
+        <div class="header-desc">稳定排序</div>
+    </div>
+    <div class="card-body">
+        <p>对范围进行排序，同时保持相等元素的相对顺序。</p>
+        <div class="code-block">
+std::vector&lt;std::pair&lt;int, char&gt;&gt; v = {<br>
+&nbsp;&nbsp;{2, 'b'}, {1, 'a'}, {2, 'c'}, {1, 'd'}};<br>
+std::stable_sort(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](auto a, auto b) { return a.first < b.first; });<br>
+// 排序后: {1, 'a'}, {1, 'd'}, {2, 'b'}, {2, 'c'}
+        </div>
+        <div class="complexity">时间复杂度: O(n log² n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::inplace_merge</h3>
+        <div class="header-desc">原地合并</div>
+    </div>
+    <div class="card-body">
+        <p>合并两个已排序的子范围为一个排序范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 3, 5, 2, 4, 6};<br>
+auto mid = v.begin() + 3;<br>
+std::inplace_merge(v.begin(), mid, v.end());<br>
+// v: {1, 2, 3, 4, 5, 6}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partition_point</h3>
+        <div class="header-desc">划分点查找</div>
+    </div>
+    <div class="card-body">
+        <p>在划分范围中查找划分点。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {2, 4, 6, 1, 3, 5}; // 已划分<br>
+auto it = std::partition_point(v.begin(), v.end(),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+std::cout << "划分点: " << *it; // 输出: 划分点: 1
+        </div>
+        <div class="complexity">时间复杂度: O(log n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::rotate_copy</h3>
+        <div class="header-desc">旋转并复制</div>
+    </div>
+    <div class="card-body">
+        <p>旋转范围并将结果复制到目标范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; dest(5);<br>
+std::rotate_copy(src.begin(), src.begin() + 2,<br>
+&nbsp;&nbsp;src.end(), dest.begin());<br>
+// dest: {3, 4, 5, 1, 2}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::unique_copy</h3>
+        <div class="header-desc">复制唯一元素</div>
+    </div>
+    <div class="card-body">
+        <p>从范围中复制元素，忽略连续的重复项。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 1, 2, 2, 3, 3, 3, 4};<br>
+std::vector&lt;int&gt; dest;<br>
+std::unique_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest));<br>
+// dest: {1, 2, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::remove_copy</h3>
+        <div class="header-desc">复制时移除</div>
+    </div>
+    <div class="card-body">
+        <p>复制范围中的元素，但跳过等于特定值的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 2, 4};<br>
+std::vector&lt;int&gt; dest;<br>
+std::remove_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest), 2);<br>
+// dest: {1, 3, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::replace_copy</h3>
+        <div class="header-desc">复制时替换</div>
+    </div>
+    <div class="card-body">
+        <p>复制范围中的元素，同时替换特定值。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 2, 4};<br>
+std::vector&lt;int&gt; dest;<br>
+std::replace_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(dest), 2, 9);<br>
+// dest: {1, 9, 3, 9, 4}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::partition_copy</h3>
+        <div class="header-desc">划分并复制</div>
+    </div>
+    <div class="card-body">
+        <p>将范围划分为两个范围，同时复制元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4, 5, 6};<br>
+std::vector&lt;int&gt; even, odd;<br>
+std::partition_copy(src.begin(), src.end(),<br>
+&nbsp;&nbsp;std::back_inserter(even), std::back_inserter(odd),<br>
+&nbsp;&nbsp;[](int n) { return n % 2 == 0; });<br>
+// even: {2, 4, 6}, odd: {1, 3, 5}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::find</h3>
+        <div class="header-desc">范围查找</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的查找算法。</p>
+        <div class="code-block">
+#include &lt;ranges&gt;<br>
+#include &lt;algorithm&gt;<br><br>
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+auto it = std::ranges::find(v, 3);<br>
+// *it = 3
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::all_of</h3>
+        <div class="header-desc">范围条件检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的条件检查算法。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {2, 4, 6, 8};<br>
+bool allEven = std::ranges::all_of(v,<br>
+&nbsp;&nbsp;[](int i) { return i % 2 == 0; });<br>
+// allEven = true
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::count_if</h3>
+        <div class="header-desc">范围条件计数</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的条件计数算法。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+int count = std::ranges::count_if(v,<br>
+&nbsp;&nbsp;[](int n) { return n > 3; });<br>
+// count = 2
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::iota</h3>
+        <div class="header-desc">整数序列视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++20范围库中的惰性整数序列生成器。</p>
+        <div class="code-block">
+for (int i : std::views::iota(1, 6)) {<br>
+&nbsp;&nbsp;std::cout << i << " "; // 1 2 3 4 5<br>
+}<br><br>
+// 无限序列<br>
+auto infinite = std::views::iota(1);<br>
+for (int i : infinite | std::views::take(5)) {<br>
+&nbsp;&nbsp;std::cout << i << " "; // 1 2 3 4 5<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::contains</h3>
+        <div class="header-desc">范围包含检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，检查范围是否包含特定值。</p>
+        <div class="code-block">
+#include &lt;ranges&gt;<br><br>
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+bool has3 = std::ranges::contains(v, 3); // true<br>
+bool has6 = std::ranges::contains(v, 6); // false
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::starts_with</h3>
+        <div class="header-desc">范围前缀检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，检查范围是否以特定序列开头。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; prefix = {1, 2};<br>
+bool starts = std::ranges::starts_with(v1, prefix); // true
+        </div>
+        <div class="complexity">时间复杂度: O(min(n, m))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::ends_with</h3>
+        <div class="header-desc">范围后缀检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，检查范围是否以特定序列结尾。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v1 = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; suffix = {4, 5};<br>
+bool ends = std::ranges::ends_with(v1, suffix); // true
+        </div>
+        <div class="complexity">时间复杂度: O(min(n, m))</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::fold_left</h3>
+        <div class="header-desc">左折叠操作</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，对范围元素执行左折叠操作。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+int sum = std::ranges::fold_left(v, 0, std::plus{}); // 10<br>
+int product = std::ranges::fold_left(v, 1, std::multiplies{}); // 24
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::fold_left_first</h3>
+        <div class="header-desc">左折叠首元素</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，使用首元素作为初始值执行左折叠。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+auto max = std::ranges::fold_left_first(v, std::greater{}); // 4<br>
+auto min = std::ranges::fold_left_first(v, std::less{}); // 1
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::fold_right</h3>
+        <div class="header-desc">右折叠操作</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，对范围元素执行右折叠操作。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+int result = std::ranges::fold_right(v, 0, [](int a, int b) {<br>
+&nbsp;&nbsp;return a - b;<br>
+}); // 1 - (2 - (3 - (4 - 0))) = 1 - 2 + 3 - 4 = -2
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::chunk_by</h3>
+        <div class="header-desc">条件分组视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，根据谓词将元素分组。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 1, 2, 3, 3, 3, 2, 2};<br>
+auto chunks = v | std::views::chunk_by(std::equal_to{});<br>
+for (auto chunk : chunks) {<br>
+&nbsp;&nbsp;// [1,1], [2], [3,3,3], [2,2]<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::slide</h3>
+        <div class="header-desc">滑动窗口视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，创建滑动窗口。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+auto windows = v | std::views::slide(3);<br>
+for (auto win : windows) {<br>
+&nbsp;&nbsp;// [1,2,3], [2,3,4], [3,4,5]<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::join_with</h3>
+        <div class="header-desc">分隔符连接视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，使用分隔符连接范围。</p>
+        <div class="code-block">
+std::vector&lt;std::vector&lt;int&gt;&gt; v = {{1}, {2,3}, {4,5,6}};<br>
+auto joined = v | std::views::join_with(0);<br>
+// 生成序列: 1,0,2,3,0,4,5,6
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::zip_transform</h3>
+        <div class="header-desc">变换压缩视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，对多个范围进行压缩和变换。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; a = {1, 2, 3};<br>
+std::vector&lt;int&gt; b = {4, 5, 6};<br>
+auto sums = std::views::zip_transform(std::plus{}, a, b);<br>
+// 生成序列: 5,7,9
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::adjacent</h3>
+        <div class="header-desc">相邻元素视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，创建相邻元素组。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+auto pairs = v | std::views::adjacent&lt;2&gt;;<br>
+for (auto [a, b] : pairs) {<br>
+&nbsp;&nbsp;// (1,2), (2,3), (3,4)<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::cartesian_product</h3>
+        <div class="header-desc">笛卡尔积视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，创建多个范围的笛卡尔积。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; x = {1, 2};<br>
+std::vector&lt;char&gt; y = {'a', 'b'};<br>
+auto product = std::views::cartesian_product(x, y);<br>
+for (auto [a, b] : product) {<br>
+&nbsp;&nbsp;// (1,'a'), (1,'b'), (2,'a'), (2,'b')<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::find_last</h3>
+        <div class="header-desc">查找最后出现</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，查找范围中最后一次出现的位置。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 2, 1};<br>
+auto result = std::ranges::find_last(v, 2);<br>
+if (result != v.end()) {<br>
+&nbsp;&nbsp;std::cout << "最后出现位置: " << std::distance(v.begin(), result); // 3<br>
+}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::find_last_if</h3>
+        <div class="header-desc">条件查找最后出现</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，查找范围中最后一次满足条件的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 4, 3, 6, 5};<br>
+auto result = std::ranges::find_last_if(v, [](int i) {<br>
+&nbsp;&nbsp;return i % 2 == 0; // 查找最后一个偶数<br>
+});<br>
+// *result = 6
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::contains_subrange</h3>
+        <div class="header-desc">子范围包含检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，检查范围是否包含特定子范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; sub = {3, 4};<br>
+bool contains = std::ranges::contains_subrange(v, sub); // true
+        </div>
+        <div class="complexity">时间复杂度: O(n*m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::shift_left</h3>
+        <div class="header-desc">范围左移</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，对范围执行左移操作。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+auto end = std::ranges::shift_left(v, 2);<br>
+// v: {3, 4, 5, 4, 5}，end指向第3个元素
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::shift_right</h3>
+        <div class="header-desc">范围右移</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，对范围执行右移操作。</div>
+    <div class="card-body">
+        <p>C++23新增算法，对范围执行右移操作。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+auto end = std::ranges::shift_right(v, 2);<br>
+// v: {1, 2, 1, 2, 3}，end指向第3个元素
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::iota</h3>
+        <div class="header-desc">范围递增填充</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增算法，用连续递增的值填充范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v(5);<br>
+std::ranges::iota(v, 10);<br>
+// v: {10, 11, 12, 13, 14}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::chunk</h3>
+        <div class="header-desc">固定大小分组视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，将范围划分为固定大小的块。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5, 6};<br>
+auto chunks = v | std::views::chunk(2);<br>
+for (auto chunk : chunks) {<br>
+&nbsp;&nbsp;// [1,2], [3,4], [5,6]<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::stride</h3>
+        <div class="header-desc">步长视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，以指定步长遍历范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5, 6};<br>
+auto strided = v | std::views::stride(2);<br>
+for (int i : strided) {<br>
+&nbsp;&nbsp;// 1, 3, 5<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::repeat</h3>
+        <div class="header-desc">重复值视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，生成无限重复的值序列。</p>
+        <div class="code-block">
+auto ones = std::views::repeat(1);<br>
+for (int i : ones | std::views::take(5)) {<br>
+&nbsp;&nbsp;// 1, 1, 1, 1, 1<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::generate</h3>
+        <div class="header-desc">生成视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，通过生成函数创建无限序列。</p>
+        <div class="code-block">
+int count = 0;<br>
+auto seq = std::views::generate([&count] { return count++; });<br>
+for (int i : seq | std::views::take(5)) {<br>
+&nbsp;&nbsp;// 0, 1, 2, 3, 4<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::enumerate</h3>
+        <div class="header-desc">枚举视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，为范围元素添加索引。</p>
+        <div class="code-block">
+std::vector&lt;char&gt; v = {'a', 'b', 'c'};<br>
+for (auto [index, value] : v | std::views::enumerate) {<br>
+&nbsp;&nbsp;// (0,'a'), (1,'b'), (2,'c')<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::as_const</h3>
+        <div class="header-desc">常量视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++23新增视图，将范围元素视为常量。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3};<br>
+auto const_view = v | std::views::as_const;<br>
+// 所有元素都是const int&amp;
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::find_min</h3>
+        <div class="header-desc">查找最小值</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，查找范围中的最小值。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {5, 3, 8, 1, 6};<br>
+auto min = std::ranges::find_min(v);<br>
+// min = 1
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::find_max</h3>
+        <div class="header-desc">查找最大值</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，查找范围中的最大值。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {5, 3, 8, 1, 6};<br>
+auto max = std::ranges::find_max(v);<br>
+// max = 8
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::find_minmax</h3>
+        <div class="header-desc">查找最小值和最大值</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，同时查找范围中的最小值和最大值。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {5, 3, 8, 1, 6};<br>
+auto [min, max] = std::ranges::find_minmax(v);<br>
+// min = 1, max = 8
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::contains_if</h3>
+        <div class="header-desc">条件包含检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，检查范围是否包含满足条件的元素。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 3, 5, 7, 9};<br>
+bool hasEven = std::ranges::contains_if(v, <br>
+&nbsp;&nbsp;[](int i) { return i % 2 == 0; }); // false
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::contains_range</h3>
+        <div class="header-desc">范围包含检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，检查范围是否包含特定子范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; sub = {3, 4};<br>
+bool contains = std::ranges::contains_range(v, sub); // true
+        </div>
+        <div class="complexity">时间复杂度: O(n*m)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::is_palindrome</h3>
+        <div class="header-desc">回文检查</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，检查范围是否是回文序列。</p>
+        <div class="code-block">
+std::string s1 = "racecar";<br>
+bool isPal1 = std::ranges::is_palindrome(s1); // true<br><br>
+std::string s2 = "hello";<br>
+bool isPal2 = std::ranges::is_palindrome(s2); // false
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::rotate_copy</h3>
+        <div class="header-desc">旋转并复制</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，旋转范围并将结果复制到目标范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; src = {1, 2, 3, 4, 5};<br>
+std::vector&lt;int&gt; dest(5);<br>
+std::ranges::rotate_copy(src, dest.begin(), src.begin() + 2);<br>
+// dest: {3, 4, 5, 1, 2}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::shift</h3>
+        <div class="header-desc">通用移位</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案算法，根据偏移量左移或右移范围。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4, 5};<br>
+std::ranges::shift(v, 2);  // 左移2位<br>
+// v: {3, 4, 5, 4, 5}<br><br>
+std::ranges::shift(v, -2); // 右移2位<br>
+// v: {1, 2, 1, 2, 3}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::pairwise</h3>
+        <div class="header-desc">相邻对视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案视图，创建相邻元素对。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 3, 4};<br>
+for (auto [a, b] : v | std::views::pairwise) {<br>
+&nbsp;&nbsp;// (1,2), (2,3), (3,4)<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::slide_by</h3>
+        <div class="header-desc">条件滑动窗口</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案视图，根据谓词创建滑动窗口。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; v = {1, 2, 4, 5, 7, 8};<br>
+auto windows = v | std::views::slide_by([](int a, int b) {<br>
+&nbsp;&nbsp;return b - a == 1; // 连续数字分组<br>
+});<br>
+for (auto win : windows) {<br>
+&nbsp;&nbsp;// [1,2], [4,5], [7,8]<br>
+}
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::views::zip_transform</h3>
+        <div class="header-desc">变换压缩视图</div>
+    </div>
+    <div class="card-body">
+        <p>C++26提案视图，对多个范围进行压缩和变换。</p>
+        <div class="code-block">
+std::vector&lt;int&gt; a = {1, 2, 3};<br>
+std::vector&lt;char&gt; b = {'a', 'b', 'c'};<br>
+auto combined = std::views::zip_transform(<br>
+&nbsp;&nbsp;[](int i, char c) { return std::to_string(i) + c; }, a, b);<br>
+// "1a", "2b", "3c"
+        </div>
+        <div class="complexity">惰性求值，时间复杂度取决于使用</div>
+    </div>
+</div>
+
+<div class="algorithm-card">
+    <div class="card-header">
+        <h3>std::ranges::to</h3>
+        <div class="header-desc">范围转换</div>
+    </div>
+    <div class="card-body">
+        <p>C++23范围适配器，将范围转换为容器。</p>
+        <div class="code-block">
+auto squares = std::views::iota(1, 5)<br>
+&nbsp;&nbsp;| std::views::transform([](int i) { return i * i; });<br>
+auto vec = squares | std::ranges::to&lt;std::vector&lt;int&gt;&gt;();<br>
+// vec: {1, 4, 9, 16}
+        </div>
+        <div class="complexity">时间复杂度: O(n)</div>
+    </div>
+</div>
+            <!-- 算法卡片结束 -->
+        </div>
+        
+        <footer>
+            <p>STL算法大全 &copy; 2023 | C++标准模板库参考指南 | 包含80+个算法</p>
+        </footer>
+    </div>
+
+    <script>
+        // 简单的搜索功能
+        document.querySelector('.search-btn').addEventListener('click', function() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const cards = document.querySelectorAll('.algorithm-card');
+            
+            cards.forEach(card => {
+                const title = card.querySelector('h3').textContent.toLowerCase();
+                const desc = card.querySelector('p').textContent.toLowerCase();
+                
+                if (title.includes(searchTerm) || desc.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+        
+        // 搜索框按回车键触发搜索
+        document.getElementById('search').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                document.querySelector('.search-btn').click();
+            }
+        });
+        
+        // 分类过滤功能
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        categoryButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // 移除所有按钮的active类
+                categoryButtons.forEach(btn => btn.classList.remove('active'));
+                // 添加active类到当前按钮
+                this.classList.add('active');
+                
+                // 这里可以添加实际的分类过滤逻辑
+                // 例如：根据按钮的文本内容过滤算法卡片
+            });
+        });
+    </script>
+</body>
+</html>

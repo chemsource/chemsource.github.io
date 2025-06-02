@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ STL 算法使用指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--dark-color), #1a2530);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: var(--accent-color);
+        }
+        
+        .header p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        
+        .nav-tab {
+            background: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3极 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .algorithm-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .algorithm-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .algorithm-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .algorithm-title {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .algorithm-title i {
+            font-size: 1.8rem;
+        }
+        
+        .algorithm-tags {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .tag {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .tag-nonmodifying {
+            background-color: #d6eaf8;
+            color: var(--primary-color);
+        }
+        
+        .tag-modifying {
+            background-color: #d5f5e3;
+            color: var(--success-color);
+        }
+        
+        .tag-sorting {
+            background-color: #fdebd0;
+            color: var(--warning-color);
+        }
+        
+        .tag-numeric {
+            background-color: #e8daef;
+            color: #9b59b6;
+        }
+        
+        .algorithm-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+        
+        .stat-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-value.warning {
+            color: var(--warning-color);
+        }
+        
+        .stat-value.success {
+            color: var(--success-color);
+        }
+        
+        .code-container {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        
+        .copy-btn {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--dark-color);
+            display: inline-block;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        ul li {
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comparison-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .comparison-table td:first-child {
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        .good {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .average {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+        
+        .poor {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .algorithm-category {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .category-header {
+            background: var(--primary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .algorithm-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-cogs"></i> C++ STL 算法使用指南</h1>
+        <p>全面掌握C++标准模板库中的算法概念、分类和使用方法</p>
+    </div>
+    
+    <div class="nav-tabs">
+        <div class="nav-tab active" data-tab="overview"><i class="fas fa-globe-americas"></i> 算法概览</div>
+        <div class="nav-tab" data-tab="categories"><i class="fas fa-layer-group"></i> 算法分类</div>
+        <div class="nav-tab" data-tab="examples"><i class="fas fa-code"></i> 使用示例</div>
+        <div class="nav-tab" data-tab="advanced"><i class="fas fa-rocket"></i> 高级技巧</div>
+    </div>
+    
+    <!-- 算法概览部分 -->
+    <div class="section active" id="overview">
+        <h2><i class="fas fa-globe-americas"></i> STL算法概览</h2>
+        <p>STL算法是标准模板库的核心组件之一，提供了一系列通用的算法，用于处理容器中的数据。</p>
+        
+        <h3>STL算法的基本特点</h3>
+        <ul>
+            <li><span class="highlight">泛型设计</span>：算法独立于数据类型，通过模板实现</li>
+            <li><span class="highlight">迭代器驱动</span>：通过迭代器访问容器元素，不直接操作容器</li>
+            <li><span class="highlight">高度复用</span>：标准算法覆盖了大部分常见操作需求</li>
+            <li><span class="highlight">高性能</span>：经过高度优化的实现，保证执行效率</li>
+        </ul>
+        
+        <div class="algorithm-stats">
+            <div class="stat-card">
+                <div class="stat-title">算法数量</div>
+                <div class="stat-value">100+</div>
+                <p>覆盖各种数据处理需求</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">主要分类</div>
+                <div class="stat-value">4大类</div>
+                <p>非修改、修改、排序、数值算法</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">关键特性</div>
+                <div class="stat-value">通用性</div>
+                <p>适用于所有STL容器</p>
+            </div>
+        </div>
+        
+        <h3>算法与迭代器的关系</h3>
+        <p>STL算法通过迭代器访问容器元素，不同类别的算法需要不同类别的迭代器支持：</p>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>算法类别</th>
+                    <th>所需迭代器</th>
+                    <th>时间复杂度</th>
+                    <th>示例算法</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>非修改序列操作</td>
+                    <td>输入迭代器</td>
+                    <td>O(n)</td>
+                    <td>find, count, for_each</td>
+                </tr>
+                <tr>
+                    <td>修改序列操作</td>
+                    <td>前向迭代器</td>
+                    <td>O(n)</td>
+                    <td>copy, replace, transform</td>
+                </tr>
+                <tr>
+                    <td>排序和相关操作</td>
+                    <td>随机访问迭代器</td>
+                    <td>O(n log n)</td>
+                    <td>sort, stable_sort, nth_element</td>
+                </tr>
+                <tr>
+                    <td>数值算法</td>
+                    <td>输入迭代器</td>
+                    <td>O(n)</td>
+                    <td>accumulate, inner_product</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    
+    <!-- 算法分类部分 -->
+    <div class="section" id="categories">
+        <h2><i class="fas fa-layer-group"></i> STL算法分类</h2>
+        <p>STL算法可以分为四大类，每类算法有特定的功能和使用场景。</p>
+        
+        <div class="algorithm-category">
+            <div class="category-header">
+                <i class="fas fa-search"></i> 非修改序列操作
+            </div>
+            <p>这些算法不会修改容器中的元素，只进行查找、计数、比较等操作。</p>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-search"></i> find / find_if
+                    </div>
+                    <div class="algorithm-tags">
+                        <div class="tag tag-nonmodifying">查找</div>
+                    </div>
+                </div>
+                <p>在序列中查找特定元素或满足条件的元素。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>find示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5};
+    
+    // 查找值为3的元素
+    auto it = std::find(numbers.begin(), numbers.end(), 3);
+    
+    if (it != numbers.end()) {
+        std::cout &lt;&lt; "找到元素: " &lt;&lt; *it &lt;&lt; " 位置: " 
+                  &lt;&lt; std::distance(numbers.begin(), it);
+    }
+    
+    // 查找大于3的第一个元素
+    auto it2 = std::find_if(numbers.begin(), numbers.end(), 
+                           [](int n) { return n > 3; });
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-calculator"></i> count / count_if
+                    </div>
+                    <div class="algorithm-tags">
+                        <div class="tag tag-nonmodifying">计数</div>
+                    </div>
+                </div>
+                <p>计算序列中特定元素的数量或满足条件的元素数量。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>count示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {1, 2, 3, 4, 3, 2, 1};
+    
+    // 计算值为3的元素个数
+    int cnt = std::count(nums.begin(), nums.end(), 3);
+    std::cout &lt;&lt; "3的个数: " &lt;&lt; cnt &lt;&lt; "\n";
+    
+    // 计算大于2的元素个数
+    int cnt2 = std::count_if(nums.begin(), nums.end(), 
+                           [](int n) { return n > 2; });
+    std::cout &lt;&lt; "大于2的个数: " &lt;&lt; cnt2;
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="algorithm-category">
+            <div class="category-header">
+                <i class="fas fa-edit"></i> 修改序列操作
+            </div>
+            <p>这些算法会修改容器中的元素或生成新的序列。</p>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-copy"></i> copy / copy_if
+                    </div>
+                    <div class="algorithm-tags">
+                        <div class="tag tag-modifying">复制</div>
+                    </div>
+                </div>
+                <p>复制序列中的元素到另一个位置，可选择满足条件的元素。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>copy示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+
+int main() {
+    std::vector&lt;int&gt; src = {1, 2, 3, 4, 5};
+    std::vector&lt;int&gt; dest(5);
+    
+    // 复制整个序列
+    std::copy(src.begin(), src.end(), dest.begin());
+    
+    std::cout &lt;&lt; "复制结果: ";
+    for (int n : dest) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    std::vector&lt;int&gt; even;
+    // 只复制偶数
+    std::copy_if(src.begin(), src.end(), std::back_inserter(even),
+                [](int n) { return n % 2 == 0; });
+    
+    std::cout &lt;&lt; "\n偶数: ";
+    for (int n : even) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-sync-alt"></i> transform
+                    </div>
+                    <div class="algorithm极ags">
+                        <div class="tag tag-modifying">转换</div>
+                    </div>
+                </div>
+                <p>对序列中的每个元素应用一个函数，并将结果存储到另一个序列。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>transform示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+#include &lt;cmath&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {1, 2, 3, 4, 5};
+    std::vector&lt;int&gt; squares;
+    
+    // 计算平方
+    std::transform(nums.begin(), nums.end(), 
+                   std::back_inserter(squares),
+                   [](int n) { return n * n; });
+    
+    std::cout &lt;&lt; "平方: ";
+    for (int n : squares) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    std::vector&lt;double&gt; roots;
+    // 计算平方根
+    std::transform(nums.begin(), nums.end(), 
+                   std::back_inserter(roots),
+                   [](int n) { return std::sqrt(n); });
+    
+    std::cout &lt;&lt; "\n平方根: ";
+    for (double n : roots) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="algorithm-category">
+            <div class="category-header">
+                <i class="fas fa-sort"></i> 排序和相关操作
+            </div>
+            <p>用于排序、搜索和操作有序序列的算法。</p>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-sort-amount-down"></i> sort
+                    </div>
+                    <div class="algorithm-tags">
+                        <div class="tag tag-sorting">排序</div>
+                    </div>
+                </div>
+                <p>对序列进行排序，默认升序排序。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>sort示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {5, 3, 1, 4, 2};
+    
+    // 升序排序
+    std::sort(nums.begin(), nums.end());
+    
+    std::cout &lt;&lt; "升序: ";
+    for (int n : nums) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 降序排序
+    std::sort(nums.begin(), nums.end(), 
+             [](int a, int b) { return a > b; });
+    
+    std::cout &lt;&lt; "\n降序: ";
+    for (int n : nums) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-search-plus"></i> binary_search
+                    </div>
+                    <div class="algorithm-tags">
+                        <div class="tag tag-sorting">搜索</div>
+                    </div>
+                </div>
+                <p>在已排序序列中执行二分查找。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>binary_search示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;algorithm&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    
+    // 序列必须先排序
+    std::sort(nums.begin(), nums.end());
+    
+    // 查找元素5
+    bool found = std::binary_search(nums.begin(), nums.end(), 5);
+    
+    if (found) {
+        std::cout &lt;&lt; "找到元素5\n";
+    }
+    
+    // 查找元素10
+    found = std::binary_search(nums.begin(), nums.end(), 10);
+    
+    if (!found) {
+        std::cout &lt;&lt; "未找到元素10\n";
+    }
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="algorithm-category">
+            <div class="category-header">
+                <i class="fas fa-calculator"></i> 数值算法
+            </div>
+            <p>用于数值计算的算法，需要包含 &lt;numeric&gt; 头文件。</p>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-plus-circle"></i> accumulate
+                    </div>
+                    <div class="algorithm-tags">
+                        <div class="tag tag-numeric">求和</div>
+                    </div>
+                </div>
+                <p>计算序列中所有元素的累加和。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>accumulate示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;numeric&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; nums = {1, 2, 3, 4, 5};
+    
+    // 计算总和
+    int sum = std::accumulate(nums.begin(), nums.end(), 0);
+    std::cout &lt;&lt; "总和: " &lt;&lt; sum &lt;&lt; "\n";
+    
+    // 计算乘积
+    int product = std::accumulate(nums.begin(), nums.end(), 1,
+                                 [](int a, int b) { return a * b; });
+    std::cout &lt;&lt; "乘积: " &lt;&lt; product;
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+            
+            <div class="algorithm-card">
+                <div class="algorithm-header">
+                    <div class="algorithm-title">
+                        <i class="fas fa-dot-circle"></i> inner_product
+                    </div>
+                    <div class="algorithm-tags">
+                        <div class="tag tag-numeric">内积</div>
+                    </div>
+                </div>
+                <p>计算两个序列的内积（点积）。</p>
+                
+                <div class="code-container">
+                    <div class="code-header">
+                        <span>inner_product示例</span>
+                        <button class="copy-btn">复制代码</button>
+                    </div>
+                    <pre>#include &lt;numeric&gt;
+#include &lt;vector&gt;
+#include &lt;iostream&gt;
+
+int main() {
+    std::vector&lt;int&gt; a = {1, 2, 3};
+    std::vector&lt;int&gt; b = {4, 5, 6};
+    
+    // 计算内积 (1*4 + 2*5 + 3*6)
+    int dot = std::inner_product(a.begin(), a.end(), b.begin(), 0);
+    std::cout &lt;&lt; "内积: " &lt;&lt; dot &lt;&lt; "\n";
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 使用示例部分 -->
+    <div class="section" id="examples">
+    <h2><i class="fas fa-code"></i> 算法使用示例</h2>
+    <p>实际应用场景中算法的综合使用案例。</p>
+    
+    <h3>数据处理流程</h3>
+    <div class="code-container">
+        <div class="code-header">
+            <span>数据处理示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;numeric&gt;
+
+int main() {
+    // 1. 创建数据集
+    std::vector&lt;int&gt; data = {7, 3, 5, 1, 9, 2, 8, 4, 6};
+    
+    // 2. 排序数据
+    std::sort(data.begin(), data.end());
+    std::cout &lt;&lt; "排序后: ";
+    for (int n : data) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 3. 查找中位数
+    auto mid = data.begin() + data.size()/2;
+    std::nth_element(data.begin(), mid, data.end());
+    std::cout &lt;&lt; "\n中位数: " &lt;&lt; *mid;
+    
+    // 4. 移除小于5的元素
+    auto new_end = std::remove_if(data.begin(), data.end(),
+                                [](int n) { return n < 5; });
+    data.erase(new_end, data.end());
+    
+    std::cout &lt;&lt; "\n大于等于5的元素: ";
+    for (int n : data) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 5. 计算平均值
+    double avg = std::accumulate(data.begin(), data.end(), 0.0) / data.size();
+    std::cout &lt;&lt; "\n平均值: " &lt;&lt; avg;
+    
+    // 6. 查找最大值和最小值
+    auto minmax = std::minmax_element(data.begin(), data.end());
+    std::cout &lt;&lt; "\n最小值: " &lt;&lt; *minmax.first;
+    std::cout &lt;&lt; "\n最大值: " &lt;&lt; *minmax.second;
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>自定义对象处理</h3>
+    <div class="code-container">
+        <div class="code-header">
+            <span>自定义对象示例</span>
+            <button class="copy-btn">复制极码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+struct Student {
+    std::string name;
+    int score;
+    
+    Student(std::string n, int s) : name(n), score(s) {}
+    
+    bool operator<(const Student& other) const {
+        return score < other.score;
+    }
+};
+
+int main() {
+    std::vector&lt;Student&gt; students = {
+        {"Alice", 85},
+        {"Bob", 76},
+        {"Charlie", 92},
+        {"David", 68}
+    };
+    
+    // 按分数排序
+    std::sort(students.begin(), students.end());
+    
+    std::cout &lt;&lt; "按分数排序:\n";
+    for (const auto& s : students) {
+        std::cout &lt;&lt; s.name &lt;&lt; ": " &lt;&lt; s.score &lt;&lt; "\n";
+    }
+    
+    // 查找分数大于80的学生
+    auto it = std::find_if(students.begin(), students.end(),
+                          [](const Student& s) { return s.score > 80; });
+    
+    std::cout &lt;&lt; "\n分数大于80的学生:\n";
+    while (it != students.end()) {
+        std::cout &lt;&lt; it->name &lt;&lt; ": " &lt;&lt; it->score &lt;&lt; "\n";
+        it = std::find_if(std::next(it), students.end(),
+                         [](const Student& s) { return s.score > 80; });
+    }
+    
+    // 计算平均分
+    int total = std::accumulate(students.begin(), students.end(), 0,
+                               [](int sum, const Student& s) { 
+                                   return sum + s.score; 
+                               });
+    double average = static_cast&lt;double&gt;(total) / students.size();
+    std::cout &lt;&lt; "\n平均分: " &lt;&lt; average;
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>算法组合使用</h3>
+    <div class="code-container">
+        <div class="code-header">
+            <span>算法组合示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;iterator&gt;
+
+int main() {
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    
+    // 1. 过滤偶数
+    std::vector&lt;int&gt; evenNumbers;
+    std::copy_if(numbers.begin(), numbers.end(), 
+                std::back_inserter(evenNumbers),
+                [](int n) { return n % 2 == 0; });
+    
+    // 2. 对偶数进行平方运算
+    std::vector&lt;int&gt; squaredNumbers;
+    std::transform(evenNumbers.begin(), evenNumbers.end(), 
+                  std::back_inserter(squaredNumbers),
+                  [](int n) { return n * n; });
+    
+    // 3. 排序（降序）
+    std::sort(squaredNumbers.begin(), squaredNumbers.end(), 
+             [](int a, int b) { return a > b; });
+    
+    // 4. 输出结果
+    std::cout &lt;&lt; "处理后的数字: ";
+    std::copy(squaredNumbers.begin(), squaredNumbers.end(),
+             std::ostream_iterator&lt;int&gt;(std::cout, " "));
+    
+    // 5. 查找大于50的元素
+    auto it = std::find_if(squaredNumbers.begin(), squaredNumbers.end(),
+                         [](int n) { return n > 50; });
+    
+    if (it != squaredNumbers.end()) {
+        std::cout &lt;&lt; "\n第一个大于50的元素: " &lt;&lt; *it;
+    }
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>迭代器失效问题</h3>
+    <div class="code-container">
+        <div class="code-header">
+            <span>迭代器失效示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5, 6, 7, 8, 9};
+    
+    // 错误示例：在修改容器时使用迭代器
+    auto it = numbers.begin();
+    while (it != numbers.end()) {
+        if (*it % 2 == 0) {
+            // 删除元素会使当前迭代器失效
+            numbers.erase(it); // 错误！it在erase后失效
+        } else {
+            ++it;
+        }
+    }
+    
+    // 正确做法：使用erase-remove惯用法
+    numbers.erase(
+        std::remove_if(numbers.begin(), numbers.end(),
+                      [](int n) { return n % 2 == 0; }),
+        numbers.end()
+    );
+    
+    std::cout &lt;&lt; "删除偶数后的结果: ";
+    for (int n : numbers) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>高级算法应用</h3>
+    <div class="code-container">
+        <div class="code-header">
+            <span>高级算法示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;numeric&gt;
+
+int main() {
+    std::vector&lt;int&gt; data = {5, 7, 4, 2, 8, 6, 1, 9, 0, 3};
+    
+    // 1. 划分大于5的元素
+    auto bound = std::partition(data.begin(), data.end(),
+                               [](int n) { return n > 5; });
+    
+    std::cout &lt;&lt; "划分结果: ";
+    for (auto it = data.begin(); it != bound; ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    std::cout &lt;&lt; "| ";
+    for (auto it = bound; it != data.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // 2. 对前半部分排序
+    std::sort(data.begin(), bound);
+    
+    // 3. 计算后半部分的和
+    int sum = std::accumulate(bound, data.end(), 0);
+    std::cout &lt;&lt; "\n后半部分的和: " &lt;&lt; sum;
+    
+    // 4. 查找重复元素
+    std::vector&lt;int&gt; duplicates;
+    std::vector&lt;int&gt; sorted = data;
+    std::sort(sorted.begin(), sorted.end());
+    auto last = std::unique(sorted.begin(), sorted.end());
+    
+    if (last != sorted.end()) {
+        std::cout &lt;&lt; "\n存在重复元素";
+    }
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>文件处理算法</h3>
+    <div class="code-container">
+        <div class="code-header">
+            <span>文件处理示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;fstream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;iterator&gt;
+
+int main() {
+    // 从文件读取数据
+    std::ifstream inFile("data.txt");
+    std::vector&lt;int&gt; fileData;
+    
+    // 使用istream_iterator读取整数
+    std::copy(std::istream_iterator&lt;int&gt;(inFile),
+             std::istream_iterator&lt;int&gt;(),
+             std::back_inserter(fileData));
+    
+    // 处理数据：移除负数和零
+    fileData.erase(
+        std::remove_if(fileData.begin(), fileData.end(),
+                      [](int n) { return n <= 0; }),
+        fileData.end()
+    );
+    
+    // 排序数据
+    std::sort(fileData.begin(), fileData.end());
+    
+    // 输出到新文件
+    std::ofstream outFile("processed.txt");
+    std::copy(fileData.begin(), fileData.end(),
+             std::ostream_iterator&lt;int&gt;(outFile, "\n"));
+    
+    // 计算统计信息
+    double avg = std::accumulate(fileData.begin(), fileData.end(), 0.0) 
+                / fileData.size();
+    auto minmax = std::minmax_element(fileData.begin(), fileData.end());
+    
+    std::cout &lt;&lt; "处理完成: " &lt;&lt; fileData.size() &lt;&lt; " 个有效数据\n";
+    std::cout &lt;&lt; "最小值: " &lt;&lt; *minmax.first &lt;&lt; ", 最大值: " 
+              &lt;&lt; *minmax.second &lt;&lt; ", 平均值: " &lt;&lt; avg;
+    
+    return 0;
+}</pre>
+    </div>
+</div>

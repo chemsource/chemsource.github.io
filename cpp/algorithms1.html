@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三大核心算法解析：DFS、BFS与动态规划</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f9fafb;
+        }
+        .card {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .algorithm-icon {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 12px;
+            margin-right: 16px;
+        }
+        .comparison-table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+            overflow: hidden;
+        }
+        .comparison-table th, .comparison-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .comparison-table th {
+            background-color: #f3f4f6;
+            font-weight: 600;
+        }
+        .comparison-table tr:hover td {
+            background-color: #f9fafb;
+        }
+        .highlight-box {
+            border-left: 4px solid;
+            padding: 16px;
+            background-color: #f8fafc;
+            margin: 16px 0;
+        }
+    </style>
+</head>
+<body class="max-w-4xl mx-auto px-4 py-8">
+    <header class="mb-12 text-center">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-4">三大核心算法解析：DFS、BFS与动态规划</h1>
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">深入理解计算机科学中最基础且强大的三种算法思想</p>
+    </header>
+
+    <section class="mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <!-- DFS Card -->
+            <div class="card bg-white rounded-xl p-6">
+                <div class="flex items-center mb-4">
+                    <div class="algorithm-icon bg-blue-100 text-blue-600">
+                        <i class="fas fa-project-diagram text-2xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">深度优先搜索 (DFS)</h2>
+                </div>
+                <p class="text-gray-600 mb-4">"一条路走到黑，不行就退回一步换条路"</p>
+                
+                <div class="highlight-box border-blue-500 mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">核心思想</h3>
+                    <p class="text-gray-700">尽可能深地探索当前分支，直到尽头后回溯到最近未探索节点继续深入</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">工作原理</h3>
+                    <ol class="list-decimal pl-5 space-y-2 text-gray-700">
+                        <li>从起点开始访问当前节点</li>
+                        <li>选择未被访问的相邻节点递归应用DFS</li>
+                        <li>当所有相邻节点都被访问后回溯</li>
+                        <li>重复直到所有节点被访问</li>
+                    </ol>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">特点</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-memory text-blue-500 mt-1 mr-2"></i>
+                            <span><span class="font-medium">空间复杂度:</span> O(h)或O(V)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock text-blue-500 mt-1 mr-2"></i>
+                            <span><span class="font-medium">时间复杂度:</span> O(V + E)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-route text-blue-500 mt-1 mr-2"></i>
+                            <span>找到的路径不一定是最短路径</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">主要应用</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">图的连通性检测</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">拓扑排序</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">环检测</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">迷宫问题</span>
+                        <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">回溯算法</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- BFS Card -->
+            <div class="card bg-white rounded-xl p-6">
+                <div class="flex items-center mb-4">
+                    <div class="algorithm-icon bg-green-100 text-green-600">
+                        <i class="fas fa-expand text-2xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">广度优先搜索 (BFS)</h2>
+                </div>
+                <p class="text-gray-600 mb-4">"层层推进，由近及远"</p>
+                
+                <div class="highlight-box border-green-500 mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">核心思想</h3>
+                    <p class="text-gray-700">逐层探索：先访问所有相邻节点，再访问这些节点的相邻节点</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">工作原理</h3>
+                    <ol class="list-decimal pl-5 space-y-2 text-gray-700">
+                        <li>将起点放入队列</li>
+                        <li>从队列取出节点并访问</li>
+                        <li>将该节点的所有未被访问相邻节点放入队列</li>
+                        <li>重复直到队列为空</li>
+                    </ol>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">特点</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-start">
+                            <i class="fas fa-memory text-green-500 mt-1 mr-2"></i>
+                            <span><span class="font-medium">空间复杂度:</span> O(w)或O(V)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-clock text-green-500 mt-1 mr-2"></i>
+                            <span><span class="font-medium">时间复杂度:</span> O(V + E)</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-route text-green-500 mt-1 mr-2"></i>
+                            <span>总能找到最短路径(边数最少)</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">主要应用</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">无权图最短路径</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">连通性检测</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">网络爬虫</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">广播网络</span>
+                        <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">社交网络关系</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- DP Card -->
+            <div class="card bg-white rounded-xl p-6">
+                <div class="flex items-center mb-4">
+                    <div class="algorithm-icon bg-purple-100 text-purple-600">
+                        <i class="fas fa-sitemap text-2xl"></i>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-800">动态规划 (DP)</h2>
+                </div>
+                <p class="text-gray-600 mb-4">"聪明的会计拆解复杂账单"</p>
+                
+                <div class="highlight-box border-purple-500 mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">核心思想</h3>
+                    <p class="text-gray-700">将问题分解为子问题，存储子问题的解，避免重复计算</p>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">关键概念</h3>
+                    <ul class="space-y-2 text-gray-700">
+                        <li class="flex items-start">
+                            <i class="fas fa-star text-purple-500 mt-1 mr-2"></i>
+                            <span><span class="font-medium">最优子结构:</span> 问题最优解包含子问题最优解</span>
+                        </li>
+                        <li class="flex items-start">
+                            <i class="fas fa-redo text-purple-500 mt-1 mr-2"></i>
+                            <span><span class="font-medium">重叠子问题:</span> 相同子问题被反复计算</span>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="mb-4">
+                    <h3 class="font-semibold text-gray-800 mb-2">工作原理</h3>
+                    <ol class="list-decimal pl-5 space-y-2 text-gray-700">
+                        <li>定义状态(子问题)</li>
+                        <li>建立状态转移方程</li>
+                        <li>初始化基础情况</li>
+                        <li>确定计算顺序</li>
+                        <li>求解目标状态</li>
+                    </ol>
+                </div>
+                
+                <div>
+                    <h3 class="font-semibold text-gray-800 mb-2">主要应用</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">背包问题</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">最长公共子序列</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">编辑距离</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">最短路径</span>
+                        <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">硬币找零</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">算法对比分析</h2>
+        
+        <div class="bg-white rounded-xl overflow-hidden card">
+            <div class="overflow-x-auto">
+                <table class="comparison-table">
+                    <thead>
+                        <tr>
+                            <th class="w-1/4">特性</th>
+                            <th class="w-1/4">DFS (深度优先搜索)</th>
+                            <th class="w-1/4">BFS (广度优先搜索)</th>
+                            <th class="w-1/4">DP (动态规划)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="font-medium">核心策略</td>
+                            <td>深度优先，回溯</td>
+                            <td>广度优先，逐层推进</td>
+                            <td>分解子问题，记忆化/制表，避免重复计算</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">数据结构</td>
+                            <td>栈 (显式或隐式递归栈)</td>
+                            <td>队列 (Queue)</td>
+                            <td>数组/表 (存储状态值)</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">空间复杂度</td>
+                            <td>O(h) 或 O(V) (树高 或 节点数)</td>
+                            <td>O(w) 或 O(V) (树宽 或 节点数)</td>
+                            <td>O(子问题数量) (通常是多项式级)</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">时间复杂度</td>
+                            <td>O(V + E)</td>
+                            <td>O(V + E)</td>
+                            <td>依赖于子问题数量和状态转移复杂度</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">解的性质</td>
+                            <td>找到路径，<span class="font-medium">不一定</span>最短 (边数)</td>
+                            <td><span class="font-medium">总能</span>找到最短路径 (边数，无权图)</td>
+                            <td>找到最优解 (最小值、最大值、可行性等)</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">关键应用</td>
+                            <td>连通性、拓扑排序、环检测、回溯、迷宫路径</td>
+                            <td><span class="font-medium">无权图最短路径</span>、连通性、层级遍历、广播</td>
+                            <td>优化问题：背包、LCS、LIS、编辑距离、最短路径(带权)等</td>
+                        </tr>
+                        <tr>
+                            <td class="font-medium">核心要求</td>
+                            <td>图/树结构</td>
+                            <td>图/树结构</td>
+                            <td>最优子结构 + 重叠子问题</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section class="mb-16">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2">形象比喻</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl p-6 card">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-hiking text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">DFS: 固执的探险家</h3>
+                </div>
+                <p class="text-gray-700">像一个勇敢但有点固执的探险家，在迷宫里遇到岔路时，总是选择一条路一直走下去，直到死胡同，然后退回到上一个岔路口选择另一条路。</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 card">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-satellite-dish text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">BFS: 严谨的扫描仪</h3>
+                </div>
+                <p class="text-gray-700">像一个严谨的扫描仪，它站在起点，先探测所有一步就能到达的地方，然后探测所有两步能到达的地方，确保找到最短路径。</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 card">
+                <div class="flex items-center mb-4">
+                    <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center mr-4">
+                        <i class="fas fa-calculator text-xl"></i>
+                    </div>
+                    <h3 class="text-lg font-semibold text-gray-800">DP: 聪明的会计</h3>
+                </div>
+                <p class="text-gray-700">像一个聪明的会计在算一笔复杂账。他把大账单拆成很多小账单，并把每个小账单的结果都仔细记录下来，需要时直接查记录而不是重新计算。</p>
+            </div>
+        </div>
+    </section>
+<!--
+    <footer class="text-center text-gray-500 text-sm mt-12 pt-6 border-t">
+        <p>网页由问小白生成，仅供参考</p>
+        <p class="mt-1">最后更新时间为2025-05-31 ，星期六</p>
+        <p class="mt-1">问小白网址：<a href="https://wenxiaobai.com" class="text-blue-500 hover:underline">wenxiaobai.com</a></p>
+    </footer>
+-->
+
+    <script>
+        // 平滑滚动效果
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
