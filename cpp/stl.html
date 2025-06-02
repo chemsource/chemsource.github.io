@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ 标准模板库(STL)参考指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --sidebar-width: 280px;
+            --header-height: 60px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: var(--header-height);
+            background: linear-gradient(135deg, var(--dark-color), #1a2530);
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .header h1 i {
+            color: var(--accent-color);
+        }
+        
+        .sidebar {
+            width: var(--sidebar-width);
+            background: white;
+            height: calc(100vh - var(--header-height));
+            position: fixed;
+            top: var(--header-height);
+            left: 0;
+            overflow-y: auto;
+            padding: 1.5rem 0;
+            box-shadow: 3px 0 10px rgba(0,0,0,0.1);
+            z-index: 90;
+        }
+        
+        .sidebar h3 {
+            padding: 0.8rem 1.5rem;
+            color: var(--dark-color);
+            font-size: 1.2rem;
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 0.5rem;
+        }
+        
+        .sidebar ul {
+            list-style: none;
+        }
+        
+        .sidebar li {
+            padding: 0.5rem 1.5rem 0.5rem 2.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .sidebar li:hover {
+            background-color: #f0f7ff;
+        }
+        
+        .sidebar li.active {
+            background-color: #e3f2ff;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .sidebar li.active::before {
+            content: ">";
+            position: absolute;
+            left: 1.2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-width);
+            margin-top: var(--header-height);
+            padding: 2rem;
+            max-width: 1000px;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s;
+        }
+        
+        .section:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .component-card {
+            background: #f8f9fa;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+        
+        .component-card:hover {
+            border-color: var(--primary-color);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            transform: translateY(-5px);
+        }
+        
+        .component-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .component-card h4 i {
+            color: var(--accent-color);
+        }
+        
+        .code-container {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 6px;
+            padding: 1.2rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            position: relative;
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            color: #ccc;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+        }
+        
+        .algorithm-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+        }
+        
+        .algorithm-table th {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 0.8rem;
+            text-align: left;
+        }
+        
+        .algorithm-table td {
+            padding: 0.8rem;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .algorithm-table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .algorithm-table tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        .container-examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .container-card {
+            background: #f5f7fa;
+            border-radius: 6px;
+            padding: 1.2rem;
+            border: 1px solid #e0e6ed;
+        }
+        
+        .container-card h4 {
+            color: var(--dark-color);
+            margin-bottom: 0.8rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #ccc;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        @media (max-width: 900px) {
+            .sidebar {
+                width: 230px;
+            }
+            
+            .content {
+                margin-left: 230px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                left: -230px;
+                transition: transform 0.3s;
+                z-index: 200;
+            }
+            
+            .sidebar.active {
+                transform: translateX(230px);
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .menu-toggle {
+                display: block;
+                position: fixed;
+                top: 1rem;
+                left: 1rem;
+                background: var(--primary-color);
+                color: white;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 300;
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="menu-toggle">
+        <i class="fas fa-bars"></i>
+    </div>
+    
+    <div class="header">
+        <h1><i class="fas fa-code"></i> C++ 标准模板库(STL)参考指南</h1>
+    </div>
+    
+    <div class="sidebar">
+        <h3>目录导航</h3>
+        <ul>
+            <li class="active" data-section="stl-intro">STL 介绍</li>
+            <li data-section="six-components">六大部件总览</li>
+            <li data-section="containers">容器(Containers)</li>
+            <li data-section="iterators">迭代器(Iterators)</li>
+            <li data-section="algorithms">算法(Algorithms)</li>
+            <li data-section="functors">仿函数(Functors)</li>
+            <li data-section="adapters">适配器(Adapters)</li>
+            <li data-section="allocators">空间配置器(Allocators)</li>
+            <li data-section="container-usage">容器使用指南</li>
+            <li data-section="iterator-usage">迭代器使用指南</li>
+            <li data-section="algorithm-usage">算法使用指南</li>
+        </ul>
+    </div>
+    
+    <div class="content">
+        <!-- STL 介绍 -->
+        <section id="stl-intro" class="section">
+            <h2><i class="fas fa-info-circle"></i> STL 介绍</h2>
+            <p>C++标准模板库（Standard Template Library，STL）是C++标准库的重要组成部分，提供了一系列模板化的通用数据结构和算法。</p>
+            <p>STL最初由Alexander Stepanov在20世纪90年代早期开发，后于1994年被纳入C++标准。它的设计理念基于泛型编程，强调代码复用和效率。</p>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>STL简单示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    // 创建vector容器
+    std::vector&lt;int&gt; nums = {5, 2, 8, 1, 9};
+    
+    // 使用算法排序
+    std::sort(nums.begin(), nums.end());
+    
+    // 使用迭代器遍历
+    for (auto it = nums.begin(); it != nums.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    return 0;
+}</pre>
+            </div>
+            
+            <h3>STL的核心优势</h3>
+            <ul>
+                <li><span class="highlight">泛型编程</span>：通过模板实现与数据类型无关的通用算法</li>
+                <li><span class="highlight">高性能</span>：算法和数据结构经过高度优化</li>
+                <li><span class="highlight">可复用性</span>：标准化的接口设计</li>
+                <li><span class="highlight">扩展性</span>：用户可以自定义满足需求的组件</li>
+                <li><span class="highlight">标准化</span>：跨平台兼容性</li>
+            </ul>
+        </section>
+        
+        <!-- 六大部件总览 -->
+        <section id="six-components" class="section">
+            <h2><i class="fas fa-puzzle-piece"></i> 六大部件总览</h2>
+            <p>STL由六个主要组件构成，它们协同工作提供强大的功能：</p>
+            
+            <div class="components-grid">
+                <div class="component-card">
+                    <h4><i class="fas fa-box"></i> 容器(Containers)</h4>
+                    <p>用于存储数据的模板类，如vector、list、map等，分为序列容器和关联容器两大类。</p>
+                </div>
+                
+                <div class="component-card">
+                    <h4><i class="fas fa-sync-alt"></i> 迭代器(Iterators)</h4>
+                    <p>提供访问容器元素的方法，类似于指针，是算法与容器之间的桥梁。</p>
+                </div>
+                
+                <div class="component-card">
+                    <h4><i class="fas fa-cogs"></i> 算法(Algorithms)</h4>
+                    <p>执行各种操作的标准模板函数，如排序、搜索、变换等，通过迭代器操作容器。</p>
+                </div>
+                
+                <div class="component-card">
+                    <h4><i class="fas fa-function"></i> 仿函数(Functors)</h4>
+                    <p>重载了operator()的类对象，可以像函数一样被调用，用于自定义操作行为。</p>
+                </div>
+                
+                <div class="component-card">
+                    <h4><i class="fas fa-exchange-alt"></i> 适配器(Adapters)</h4>
+                    <p>修改容器或仿函数接口的组件，如stack、queue、priority_queue等。</p>
+                </div>
+                
+                <div class="component-card">
+                    <h4><i class="fas fa-memory"></i> 空间配置器(Allocators)</h4>
+                    <p>负责内存分配与管理的模板类，允许自定义内存分配策略。</p>
+                </div>
+            </div>
+            
+            <h3>组件协作关系</h3>
+            <p>STL六大组件通过标准化的接口协同工作：</p>
+            <p><span class="highlight">容器</span>通过<span class="highlight">空间配置器</span>获取存储空间；<span class="highlight">算法</span>通过<span class="highlight">迭代器</span>访问容器内容；<span class="highlight">仿函数</span>可以协助算法完成不同的策略变化；<span class="highlight">适配器</span>可以修饰或组合其他组件。</p>
+        </section>
+        
+        <!-- 容器详细介绍 -->
+        <section id="containers" class="section">
+            <h2><i class="fas fa-box-open"></i> 容器(Containers)</h2>
+            <p>容器是存储其他对象的对象，管理对象的集合。STL容器分为序列容器和关联容器两大类。</p>
+            
+            <h3>序列容器</h3>
+            <div class="container-examples">
+                <div class="container-card">
+                    <h4>vector</h4>
+                    <p>动态数组，支持快速随机访问，尾部插入/删除高效</p>
+                </div>
+                <div class="container-card">
+                    <h4>deque</h4>
+                    <p>双端队列，支持头尾高效插入/删除</p>
+                </div>
+                <div class="container-card">
+                    <h4>list</h4>
+                    <p>双向链表，任意位置高效插入/删除</p>
+                </div>
+                <div class="container-card">
+                    <h4>forward_list</h4>
+                    <p>单向链表，更节省空间</p>
+                </div>
+                <div class="container-card">
+                    <h4>array</h4>
+                    <p>固定大小数组，更安全的传统数组替代</p>
+                </div>
+            </div>
+            
+            <h3>关联容器</h3>
+            <div class="container-examples">
+                <div class="container-card">
+                    <h4>set</h4>
+                    <p>有序唯一键集合，基于红黑树实现</p>
+                </div>
+                <div class="container-card">
+                    <h4>map</h4>
+                    <p>有序键值对集合，键唯一</p>
+                </div>
+                <div class="container-card">
+                    <h4>multiset</h4>
+                    <p>有序集合，允许重复键</p>
+                </div>
+                <div class="container-card">
+                    <h4>multimap</h4>
+                    <p>有序键值对集合，允许重复键</p>
+                </div>
+            </div>
+            
+            <h3>无序关联容器(C++11)</h3>
+            <div class="container-examples">
+                <div class="container-card">
+                    <h4>unordered_set</h4>
+                    <p>哈希集合，无序但查找高效</p>
+                </div>
+                <div class="container-card">
+                    <h4>unordered_map</h4>
+                    <p>哈希映射，键值对的无序集合</p>
+                </div>
+                <div class="container-card">
+                    <h4>unordered_multiset</h4>
+                    <p>允许重复键的哈希集合</p>
+                </div>
+                <div class="container-card">
+                    <h4>unordered_multimap</h4>
+                    <p>允许重复键的哈希映射</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- 迭代器详细介绍 -->
+        <section id="iterators" class="section">
+            <h2><i class="fas fa-arrows-alt"></i> 迭代器(Iterators)</h2>
+            <p>迭代器提供了一种访问容器元素的方法，同时隐藏了容器的内部实现细节。它们类似于指针，可以遍历容器中的所有元素。</p>
+            
+            <h3>迭代器类别</h3>
+            <div class="container-examples">
+                <div class="container-card">
+                    <h4>输入迭代器</h4>
+                    <p>只读访问，单向移动</p>
+                </div>
+                <div class="container-card">
+                    <h4>输出迭代器</h4>
+                    <p>只写访问，单向移动</p>
+                </div>
+                <div class="container-card">
+                    <h4>前向迭代器</h4>
+                    <p>读写访问，单向移动</p>
+                </div>
+                <div class="container-card">
+                    <h4>双向迭代器</h4>
+                    <p>读写访问，双向移动</p>
+                </div>
+                <div class="container-card">
+                    <h4>随机访问迭代器</h4>
+                    <p>读写访问，任意位置跳转</p>
+                </div>
+            </div>
+            
+            <h3>迭代器操作</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>迭代器使用示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; vec = {10, 20, 30, 40, 50};
+    
+    // 获取迭代器
+    auto it = vec.begin();
+    
+    // 迭代器基本操作
+    std::cout &lt;&lt; "First element: " &lt;&lt; *it &lt;&lt; std::endl; // 10
+    
+    it += 2; // 随机访问
+    std::cout &lt;&lt; "Third element: " &lt;&lt; *it &lt;&lt; std::endl; // 30
+    
+    // 使用迭代器遍历
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    return 0;
+}</pre>
+            </div>
+        </section>
+        
+        <!-- 算法详细介绍 -->
+        <section id="algorithms" class="section">
+            <h2><i class="fas fa-cogs"></i> 算法(Algorithms)</h2>
+            <p>STL提供了超过100种算法，用于执行排序、搜索、变换等操作。这些算法通过迭代器与容器交互，不依赖容器的具体实现。</p>
+            
+            <h3>常用算法分类</h3>
+            <table class="algorithm-table">
+                <thead>
+                    <tr>
+                        <th>分类</th>
+                        <th>算法示例</th>
+                        <th>功能描述</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>排序算法</td>
+                        <td>sort, stable_sort, partial_sort</td>
+                        <td>对序列进行排序</td>
+                    </tr>
+                    <tr>
+                        <td>查找算法</td>
+                        <td>find, binary_search, lower_bound</td>
+                        <td>在序列中查找元素</td>
+                    </tr>
+                    <tr>
+                        <td>数值算法</td>
+                        <td>accumulate, inner_product, iota</td>
+                        <td>数值计算操作</td>
+                    </tr>
+                    <tr>
+                        <td>修改算法</td>
+                        <td>copy, transform, replace, fill</td>
+                        <td>修改序列内容</td>
+                    </tr>
+                    <tr>
+                        <td>分区算法</td>
+                        <td>partition, stable_partition</td>
+                        <td>根据条件分区元素</td>
+                    </tr>
+                    <tr>
+                        <td>堆算法</td>
+                        <td>make_heap, push_heap, pop_heap</td>
+                        <td>堆结构操作</td>
+                    </tr>
+                    <tr>
+                        <td>集合算法</td>
+                        <td>set_union, set_intersection</td>
+                        <td>集合操作</td>
+                    </tr>
+                    <tr>
+                        <td>排列算法</td>
+                        <td>next_permutation, prev_permutation</td>
+                        <td>生成排列</td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <h3>算法示例代码</h3>
+            <div class="code-container">
+                <div class="code-header">
+                    <span>常用算法演示</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;numeric&gt;
+
+int main() {
+    std::vector&lt;int&gt; vec = {5, 3, 1, 4, 2};
+    
+    // 排序
+    std::sort(vec.begin(), vec.end());
+    
+    // 查找
+    auto it = std::find(vec.begin(), vec.end(), 4);
+    if (it != vec.end()) {
+        std::cout &lt;&lt; "Found: " &lt;&lt; *it &lt;&lt; std::endl;
+    }
+    
+    // 数值计算
+    int sum = std::accumulate(vec.begin(), vec.end(), 0);
+    std::cout &lt;&lt; "Sum: " &lt;&lt; sum &lt;&lt; std::endl;
+    
+    // 变换
+    std::vector&lt;int&gt; doubled(vec.size());
+    std::transform(vec.begin(), vec.end(), doubled.begin(), 
+                   [](int x) { return x * 2; });
+    
+    // 输出结果
+    for (int x : doubled) {
+        std::cout &lt;&lt; x &lt;&lt; " ";
+    }
+    
+    return 0;
+}</pre>
+            </div>
+        </section>
+        
+        <!-- 其他部分的占位符 -->
+        <section id="functors" class="section">
+            <h2><i class="fas fa-function"></i> 仿函数(Functors)</h2>
+            <p><a href="functors.html">前往</a></p>
+        </section>
+        
+        <section id="adapters" class="section">
+            <h2><i class="fas fa-exchange-alt"></i> 适配器(Adapters)</h2>
+            <p><a href="adapters.html">前往</a></p>
+        </section>
+        
+        <section id="allocators" class="section">
+            <h2><i class="fas fa-memory"></i> 空间配置器(Allocators)</h2>
+            <p><a href="allocators.html">前往</a></p>
+        </section>
+        
+        <section id="container-usage" class="section">
+            <h2><i class="fas fa-book"></i> 容器使用指南</h2>
+            <p><a href="container_gidelines.html">前往</a></p>
+        </section>
+        
+        <section id="iterator-usage" class="section">
+            <h2><i class="fas fa-book"></i> 迭代器使用指南</h2>
+            <p><a href="iterator.html">前往</a></p>
+        </section>
+        
+        <section id="algorithm-usage" class="section">
+            <h2><i class="fas fa-book"></i> 算法使用指南</h2>
+            <p><a href="algo2.html">前往</a></p>
+        </section>
+        
+        <div class="footer">
+            <p>C++ STL 参考指南 &copy; 2023 | 基于C++17标准</p>
+        </div>
+    </div>
+
+    <script>
+        // 目录导航功能
+        document.querySelectorAll('.sidebar li').forEach(item => {
+            item.addEventListener('click', function() {
+                // 移除所有active类
+                document.querySelectorAll('.sidebar li').forEach(li => {
+                    li.classList.remove('active');
+                });
+                
+                // 添加当前active类
+                this.classList.add('active');
+                
+                // 获取目标部分ID
+                const sectionId = this.getAttribute('data-section');
+                
+                // 滚动到对应部分
+                document.getElementById(sectionId).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // 移动端菜单切换
+        document.querySelector('.menu-toggle').addEventListener('click', function() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        });
+        
+        // 复制代码功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const codeBlock = this.parentElement.nextElementSibling.textContent;
+                navigator.clipboard.writeText(codeBlock).then(() => {
+                    const originalText = this.textContent;
+                    this.textContent = '已复制!';
+                    setTimeout(() => {
+                        this.textContent = originalText;
+                    }, 1500);
+                });
+            });
+        });
+        
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+    </script>
+</body>
+</html>
