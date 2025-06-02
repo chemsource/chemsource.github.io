@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ STL 仿函数(Functors)详解</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--dark-color), #1a2530);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: var(--accent-color);
+        }
+        
+        .header p {
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .components-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .component-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .component-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .component-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 1.3rem;
+        }
+        
+        .component-card h4 i {
+            color: var(--accent-color);
+        }
+        
+        .code-container {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        
+        .copy-btn {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--dark-color);
+            display: inline-block;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        ul li {
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        @media (max-width: 768px) {
+            .components-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-function"></i> C++ STL 仿函数(Functors)详解</h1>
+        <p>仿函数（函数对象）是STL中强大的抽象工具，允许将函数作为参数传递，同时保持状态和类型安全</p>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-info-circle"></i> 什么是仿函数？</h2>
+        <p>仿函数（也称为函数对象）是重载了函数调用操作符<code class="highlight">operator()</code>的类对象。它们可以像普通函数一样被调用，但具有状态，可以存储和传递数据。</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>基本仿函数示例</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+
+// 自定义仿函数 - 加法器
+class Adder {
+public:
+    Adder(int num) : num_(num) {}
+    
+    int operator()(int x) const {
+        return x + num_;
+    }
+    
+private:
+    int num_;
+};
+
+int main() {
+    Adder add5(5);
+    std::cout &lt;&lt; "10 + 5 = " &lt;&lt; add5(10) &lt;&lt; std::endl; // 输出 15
+    
+    Adder add10(10);
+    std::cout &lt;&lt; "10 + 10 = " &lt;&lt; add10(10) &lt;&lt; std::endl; // 输出 20
+    
+    return 0;
+}</pre>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-star"></i> 仿函数的优势</h2>
+        <ul>
+            <li><span class="highlight">状态保持</span>：可以包含内部状态，比普通函数更灵活</li>
+            <li><span class="highlight">类型安全</span>：作为对象，可以在编译期进行类型检查</li>
+            <li><span class="highlight">适配性</span>：可以与STL适配器配合使用</li>
+            <li><span class="highlight">效率</span>：编译器可以进行更好的优化</li>
+            <li><span class="highlight">多态性</span>：可以继承和组合，实现更复杂的行为</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-boxes"></i> 仿函数分类</h2>
+        <p>STL提供了内置的仿函数，同时允许用户自定义仿函数</p>
+        
+        <div class="components-grid">
+            <div class="component-card">
+                <h4><i class="fas fa-calculator"></i> 算术仿函数</h4>
+                <p>plus, minus, multiplies, divides, modulus, negate</p>
+                <div class="code-container">
+                    <pre>std::plus&lt;int&gt; add;
+int result = add(10, 20); // 30</pre>
+                </div>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-balance-scale"></i> 关系仿函数</h4>
+                <p>equal_to, not_equal_to, greater, greater_equal, less, less_equal</p>
+                <div class="code-container">
+                    <pre>std::greater&lt;int&gt; gt;
+bool result = gt(10, 5); // true</pre>
+                </div>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-project-diagram"></i> 逻辑仿函数</h4>
+                <p>logical_and, logical_or, logical_not</p>
+                <div class="code-container">
+                    <pre>std::logical_and&lt;bool&gt; and_op;
+bool result = and_op(true, false); // false</pre>
+                </div>
+            </div>
+            
+            <div class="component-card">
+                <h4><i class="fas fa-cogs"></i> 自定义仿函数</h4>
+                <p>开发者根据需求定义的函数对象</p>
+                <div class="code-container">
+                    <pre>class Square {
+public:
+    int operator()(int x) const {
+        return x * x;
+    }
+};</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-code"></i> 仿函数使用示例</h2>
+        <p>仿函数在STL算法中的应用</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>使用仿函数进行排序和转换</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;functional&gt; // 包含STL仿函数
+
+// 自定义仿函数 - 平方
+class Square {
+public:
+    int operator()(int x) const {
+        return x * x;
+    }
+};
+
+int main() {
+    std::vector&lt;int&gt; nums = {1, 2, 3, 4, 5};
+    std::vector&lt;int&gt; squares(nums.size());
+    
+    // 使用内置仿函数进行降序排序
+    std::sort(nums.begin(), nums.end(), std::greater&lt;int&gt;());
+    std::cout &lt;&lt; "降序排序: ";
+    for (int n : nums) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 使用自定义仿函数进行转换
+    std::transform(nums.begin(), nums.end(), squares.begin(), Square());
+    std::cout &lt;&lt; "\n平方值: ";
+    for (int n : squares) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 使用lambda表达式作为仿函数
+    int threshold = 10;
+    auto count = std::count_if(squares.begin(), squares.end(), 
+        [threshold](int x) { return x > threshold; });
+    std::cout &lt;&lt; "\n大于" &lt;&lt; threshold &lt;&lt; "的值数量: " &lt;&lt; count;
+    
+    return 0;
+}</pre>
+        </div>
+        
+        <h3>输出结果</h3>
+        <div class="code-container">
+            <pre>降序排序: 5 4 3 2 1 
+平方值: 25 16 9 4 1 
+大于10的值数量: 2</pre>
+        </div>
+    </div>
+    
+    <div class="section">
+        <h2><i class="fas fa-lightbulb"></i> 最佳实践</h2>
+        <ul>
+            <li>优先使用STL内置仿函数，它们经过优化且类型安全</li>
+            <li>对于简单操作，可以使用lambda表达式替代自定义仿函数</li>
+            <li>保持仿函数无状态或小心管理状态，避免副作用</li>
+            <li>确保仿函数的调用操作符是const成员函数（除非需要修改状态）</li>
+            <li>为自定义仿函数提供清晰的命名，提高代码可读性</li>
+        </ul>
+    </div>
+    
+    <div class="footer">
+        <p>C++ STL 仿函数参考指南 | 提供完整的使用示例和最佳实践</p>
+        <a href="stl.html" class="back-btn">返回主页面</a>
+    </div>
+
+    <script>
+        // 代码复制功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const pre = button.parentElement.nextElementSibling;
+                const range = document.createRange();
+                range.selectNode(pre);
+                window.getSelection().removeAllRanges();
+                window.getSelection().addRange(range);
+                document.execCommand('copy');
+                window.getSelection().removeAllRanges();
+                
+                // 显示复制成功反馈
+                const originalText = button.textContent;
+                button.textContent = '已复制!';
+                setTimeout(() => {
+                    button.textContent = originalText;
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>
