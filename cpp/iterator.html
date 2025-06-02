@@ -1,0 +1,1769 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ STL 迭代器使用指南</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--dark-color), #1a2530);
+            color: white;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .header h1 i {
+            color: var(--accent-color);
+        }
+        
+        .header p {
+            margin-top: 1rem;
+            font: 1.1rem;
+            opacity: 0.9;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 2rem;
+            justify-content: center;
+        }
+        
+        .nav-tab {
+            background: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-tab:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            display: none;
+        }
+        
+        .section.active {
+            display: block;
+        }
+        
+        .section h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #eee;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section h2 i {
+            color: var(--secondary-color);
+        }
+        
+        .section h3 {
+            color: var(--dark-color);
+            margin: 1.5rem 0 1rem;
+            padding-left: 0.5rem;
+            border-left: 3px solid var(--accent-color);
+        }
+        
+        .section p {
+            margin-bottom: 1rem;
+            color: #555;
+            line-height: 1.8;
+        }
+        
+        .iterator-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+        
+        .iterator-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            border-color: var(--primary-color);
+        }
+        
+        .iterator-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .iterator-title {
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+        }
+        
+        .iterator-title i {
+            font-size: 1.8rem;
+        }
+        
+        .iterator-tags {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .tag {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+        
+        .tag-input {
+            background-color: #d6eaf8;
+            color: var(--primary-color);
+        }
+        
+        .tag-output {
+            background-color: #d5f5e3;
+            color: var(--success-color);
+        }
+        
+        .tag-forward {
+            background-color: #fdebd0;
+            color: var(--warning-color);
+        }
+        
+        .tag-bidirectional {
+            background-color: #e8daef;
+            color: #9b59b6;
+        }
+        
+        .tag-random {
+            background-color: #d5f5e3;
+            color: #27ae60;
+        }
+        
+        .iterator-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+        }
+        
+        .stat-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--dark-color);
+        }
+        
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-value.warning {
+            color: var(--warning-color);
+        }
+        
+        .stat-value.success {
+            color: var(--success-color);
+        }
+        
+        .code-container {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', monospace;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .code-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            color: #ccc;
+            font-size: 0.95rem;
+        }
+        
+        .copy-btn {
+            background: #555;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+            font-size: 0.9rem;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+        }
+        
+        .highlight {
+            background-color: #fff8e1;
+            padding: 0.3rem 0.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            color: var(--dark-color);
+            display: inline-block;
+        }
+        
+        ul {
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        ul li {
+            margin-bottom: 0.8rem;
+            position: relative;
+        }
+        
+        ul li:before {
+            content: "•";
+            color: var(--primary-color);
+            font-weight: bold;
+            display: inline-block;
+            width: 1em;
+            margin-left: -1em;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: #777;
+            font-size: 0.9rem;
+            border-top: 1px solid #eee;
+            margin-top: 2rem;
+        }
+        
+        .back-btn {
+            display: inline-block;
+            background: var(--primary-color);
+            color: white;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            margin-top: 1rem;
+            transition: all 0.3s;
+        }
+        
+        .back-btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+        
+        .comparison-table th, .comparison-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .comparison-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .comparison-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .comparison-table td:first-child {
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        .good {
+            color: var(--success-color);
+            font-weight: bold;
+        }
+        
+        .average {
+            color: var(--warning-color);
+            font-weight: bold;
+        }
+        
+        .poor {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+        
+        .iterator-hierarchy {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .hierarchy-level {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .hierarchy-item {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            min-width: 180px;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+        
+        .hierarchy-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.15);
+        }
+        
+        .hierarchy-item i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+        
+        .hierarchy-desc {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .hierarchy-arrow {
+            font-size: 1.5rem;
+            color: var(--secondary-color);
+            margin: 0 5px;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .iterator-stats {
+                grid-template-columns: 1fr;
+            }
+            
+            .comparison-table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .hierarchy-level {
+                flex-direction: column;
+            }
+            
+            .hierarchy-arrow {
+                transform: rotate(90deg);
+                margin: 10px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1><i class="fas fa-exchange-alt"></i> C++ STL 迭代器使用指南</h1>
+        <p>全面掌握C++标准模板库中的迭代器概念、类型和使用方法</p>
+    </div>
+    
+    <div class="nav-tabs">
+        <div class="nav-tab active" data-tab="overview"><i class="fas fa-globe-americas"></i> 迭代器概览</div>
+        <div class="nav-tab" data-tab="types"><i class="fas fa-list"></i> 迭代器类型</div>
+        <div class="nav-tab" data-tab="usage"><i class="fas fa-code"></i> 使用示例</div>
+        <div class="nav-tab" data-tab="adapters"><i class="fas fa-tools"></极> 迭代器适配器</div>
+        <div class="nav-tab" data-tab="advanced"><i class="fas fa-rocket"></i> 高级技巧</div>
+    </div>
+    
+    <!-- 迭代器概览部分 -->
+    <div class="section active" id="overview">
+        <h2><i class="fas fa-globe-americas"></i> STL迭代器概览</h2>
+        <p>迭代器是STL的核心概念，提供了一种访问容器元素的通用方法，使算法能够独立于容器类型工作。</p>
+        
+        <h3>迭代器的基本概念</h3>
+        <ul>
+            <li><span class="highlight">泛型指针</span>：迭代器行为类似于指针，提供对容器元素的访问</li>
+            <li><span class="highlight">连接容器和算法</span>：使算法能够独立于容器类型工作</li>
+            <li><span class="highlight">统一接口</span>：不同容器提供一致的访问方式</li>
+            <li><span class="highlight">范围表示</span>：使用begin()和end()表示元素范围</li>
+        </ul>
+        
+        <div class="iterator-stats">
+            <div class="stat-card">
+                <div class="stat-title">迭代器类别</div>
+                <div class="stat-value">5种</div>
+                <p>输入、输出、前向、双向、随机访问</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">核心操作</div>
+                <div class="stat-value">6种</div>
+                <p>解引用、递增、递减、比较等</p>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-title">关键特性</div>
+                <div class="stat-value">通用性</div>
+                <p>算法与容器解耦</p>
+            </div>
+        </div>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>迭代器基本使用</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;list&gt;
+
+int main() {
+    // vector迭代器示例
+    std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
+    std::cout &lt;&lt; "Vector: ";
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // list迭代器示例
+    std::list&lt;std::string&gt; names = {"Alice", "Bob", "Charlie"};
+    std::cout &lt;&lt; "\nNames: ";
+    for (auto it = names.begin(); it != names.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // 修改元素
+    auto vec_it = vec.begin();
+    *vec_it = 10; // 修改第一个元素
+    
+    // 迭代器运算
+    std::advance(vec_it, 3); // 前进3个位置
+    std::cout &lt;&lt; "\nFourth element: " &lt;&lt; *vec_it;
+    
+    return 0;
+}</pre>
+        </div>
+    </div>
+    
+    <!-- 迭代器类型部分 -->
+    <div class="section" id="types">
+        <h2><i class="fas fa-list"></i> 迭代器类型</h2>
+        <p>STL定义了5种迭代器类别，每种提供不同级别的功能和访问能力。</p>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-sign-in-alt"></i> 输入迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-input">只读</div>
+                    <div class="tag tag-good">单向</div>
+                </div>
+            </div>
+            
+            <p>只能读取元素并向前移动的迭代器，适用于单次遍历。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">支持操作</div>
+                    <div class="stat-value">读取、递增</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">典型应用</div>
+                    <div class="stat-value">输入流</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">访问方向</div>
+                    <div class="stat-value">仅向前</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>输入迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+
+int main() {
+    std::istream_iterator&lt;int&gt; input_it(std::cin);
+    std::istream_iterator&lt;int&gt; end_it;
+    
+    std::cout &lt;&lt; "Enter integers (Ctrl+D to end): ";
+    while (input_it != end_it) {
+        std::cout &lt;&lt; "Read: " &lt;&lt; *input_it &lt;&lt; "\n";
+        ++input_it;
+    }
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-sign-out-alt"></i> 输出迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-output">只写</div>
+                    <div class="tag tag-good">单向</div>
+                </div>
+            </div>
+            
+            <p>只能写入元素并向前移动的迭代器，适用于单次输出。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">支持操作</div>
+                    <div class="stat-value">写入、递增</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">典型应用</div>
+                    <div class="stat-value">输出流</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">访问方向</div>
+                    <div class="stat-value">仅向前</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>输出迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;vector&gt;
+
+int main() {
+    std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
+    std::ostream_iterator&lt;int&gt; output_it(std::cout, " ");
+    
+    std::cout &lt;&lt; "Vector content: ";
+    std::copy(vec.begin(), vec.end(), output_it);
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-arrow-right"></i> 前向迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-forward">读写</div>
+                    <div class="tag tag-good">单向</div>
+                </div>
+            </div>
+            
+            <p>可读写元素并向前移动，支持多次遍历。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">支持操作极div>
+                    <div class="stat-value">读写、递增</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">典型容器</div>
+                    <div class="stat-value">forward_list</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">访问方向</div>
+                    <div class="stat-value">仅向前</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>前向迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;forward_list&gt;
+
+int main() {
+    std::forward_list&lt;int&gt; flist = {10, 20, 30, 40};
+    
+    // 遍历前向链表
+    std::cout &lt;&lt; "Forward list: ";
+    for (auto it = flist.begin(); it != flist.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // 修改元素
+    auto it = flist.begin();
+    *it = 100;
+    
+    // 只能向前移动
+    ++it; // 正确
+    // --it; // 错误！前向迭代器不支持递减
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-arrows-alt-h"></i> 双向迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-bidirectional">读写</div>
+                    <div class="tag tag-good">双向</div>
+                </div>
+            </div>
+            
+            <p>可读写元素并向前或向后移动，支持多次遍历。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">支持操作</div>
+                    <div class="stat-value">读写、递增、递减</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">典型容器</div>
+                    <div class="stat-value">list, set, map</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">访问方向</div>
+                    <div class="stat-value">双向</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>双向迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;list&gt;
+
+int main() {
+    std::list&lt;int&gt; lst = {1, 2, 3, 4, 5};
+    
+    // 向前遍历
+    std::cout &lt;&lt; "Forward: ";
+    for (auto it = lst.begin(); it != lst.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // 向后遍历
+    std::cout &lt;&lt; "\nBackward: ";
+    for (auto it = lst.rbegin(); it != lst.rend(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // 双向移动
+    auto it = lst.begin();
+    ++it; // 前进
+    --it; // 后退
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-bullseye"></i> 随机访问迭代器
+                </div>
+                <div class极iterator-tags">
+                    <div class="tag tag-random">读写</div>
+                    <div class="tag tag-good">随机访问</div>
+                </div>
+            </div>
+            
+            <p>功能最强大的迭代器，支持所有指针运算操作，包括随机访问。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">支持操作</div>
+                    <div class="stat-value">读写、随机访问</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">典型容器</div>
+                    <div class="stat-value">vector, deque, array</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">访问能力</div>
+                    <div class="stat-value">任意位置直接访问</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>随机访问迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; vec = {10, 20, 30, 40, 50};
+    
+    // 直接访问任意位置
+    std::cout &lt;&lt; "Third element: " &lt;&lt; vec[2] &lt;&lt; "\n";
+    std::cout &lt;&lt; "First element: " &lt;&lt; *vec.begin() &lt;&lt; "\n";
+    
+    // 迭代器运算
+    auto it1 = vec.begin();
+    auto it2 = it1 + 3; // 直接前进3个位置
+    std::cout &lt;&lt; "Distance: " &lt;&lt; it2 - it1 &lt;&lt; "\n";
+    
+    // 比较操作
+    if (it1 &lt; it2) {
+        std::cout &lt;&lt; "it1 comes before it2\n";
+    }
+    
+    // 使用算法
+    std::sort(vec.begin(), vec.end());
+    
+    // 二分查找
+    if (std::binary_search(vec.begin(), vec.end(), 30)) {
+        std::cout &lt;&lt; "30 found in vector\n";
+    }
+    
+    // 修改元素
+    it1[1] = 100; // 修改第二个元素
+    std::cout &lt;&lt; "Modified vector: ";
+    for (int n : vec) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <!-- 迭代器类别关系图 -->
+        <h3>迭代器类别关系</h3>
+        <p>迭代器类别形成一个层次结构，每个更高级别的迭代器继承低级迭代器的所有功能：</p>
+
+        <div class="iterator-hierarchy">
+            <div class="hierarchy-level">
+                <div class="hierarchy-item">
+                    <i class="fas fa-sign-in-alt"></i> 输入迭代器
+                    <div class="hierarchy-desc">只读，单向</div>
+                </div>
+                <div class="hierarchy-arrow">→</div>
+                <div class="hierarchy-item">
+                    <i class="fas fa-arrow-right"></i> 前向迭代器
+                    <div class="hierarchy-desc">读写，单向</div>
+                </div>
+                <div class="hierarchy-arrow">→</div>
+                <div class="hierarchy-item">
+                    <i class="fas fa-arrows-alt-h"></i> 双向迭代器
+                    <div class="hierarchy-desc">读写，双向</div>
+                </div>
+                <div class="hierarchy-arrow">→</div>
+                <div class="hierarchy-item">
+                    <i class="fas fa-bullseye"></i> 随机访问迭代器
+                    <div class="hierarchy-desc">读写，随机访问</div>
+                </div>
+            </div>
+            <div class="hierarchy-level" style="margin-top: 20px;">
+                <div class="hierarchy-item">
+                    <i class="fas fa-sign-out-alt"></i> 输出迭代器
+                    <div class="hierarchy-desc">只写，单向</div>
+                </div>
+            </div>
+        </div>
+        
+        <h3>迭代器能力比较</h3>
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>操作</th>
+                    <th>输入</th>
+                    <th>输出</th>
+                    <th>前向</th>
+                    <th>双向</th>
+                    <th>随机访问</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>读取 (*it)</td>
+                    <td class="good">✓</td>
+                    <td>✗</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                </tr>
+                <tr>
+                    <td>写入 (*it = ...)</td>
+                    <td>✗</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                </tr>
+                <tr>
+                    <td>递增 (++)</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                </tr>
+                <tr>
+                    <td>递减 (--)</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td class="good">✓</td>
+                    <td class极good">✓</td>
+                </tr>
+                <tr>
+                    <td>比较 (==, !=)</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓</td>
+                    <td class="good">✓极td>
+                    <td class="good">✓</td>
+                </tr>
+                <tr>
+                    <td>随机访问 (it + n)</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td class="good">✓</td>
+                </tr>
+                <tr>
+                    <td>下标访问 (it[n])</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td class="good">✓</td>
+                </tr>
+                <tr>
+                    <td>关系比较 (&lt;, &gt;, etc)</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td>✗</td>
+                    <td class="good">✓</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<!-- 使用示例部分 -->
+<div class="section" id="usage">
+    <h2><i class="fas fa-code"></i> 迭代器使用示例</h2>
+    <p>掌握迭代器的核心操作和常见用法，提高C++编程效率。</p>
+    
+    <h3>遍历容器</h3>
+    <p>使用迭代器遍历各种容器中的元素。</p>
+    
+    <div class="code-container">
+        <div class="code-header">
+            <span>遍历容器示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;list&gt;
+#include &lt;map&gt;
+
+int main() {
+    // 1. 遍历vector
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5};
+    std::cout &lt;&lt; "Vector elements: ";
+    for (auto it = numbers.begin(); it != numbers.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // 2. 遍历list
+    std::list&lt;std::string&gt; fruits = {"Apple", "Banana", "Cherry"};
+    std::cout &lt;&lt; "\nList elements: ";
+    for (auto it = fruits.begin(); it != fruits.end(); ++it) {
+        std::cout &lt;&lt; *it &lt;&lt; " ";
+    }
+    
+    // 3. 遍历map
+    std::map&lt;int, std::string&gt; students = {
+        {101, "Alice"}, 
+        {102, "Bob"}, 
+        {103, "Charlie"}
+    };
+    std::cout &lt;&lt; "\nMap elements:\n";
+    for (auto it = students.begin(); it != students.end(); ++it) {
+        std::cout &lt;&lt; "ID: " &lt;&lt; it->first &lt;&lt; ", Name: " &lt;&lt; it->second &lt;&lt; "\n";
+    }
+    
+    // 4. 使用const迭代器
+    std::cout &lt;&lt; "\nConst iteration: ";
+    for (auto cit = numbers.cbegin(); cit != numbers.cend(); ++cit) {
+        // *cit = 10; // 错误，不能修改常量值
+        std::cout &lt;&lt; *cit &lt;&lt; " ";
+    }
+    
+    // 5. 使用reverse迭代器
+    std::cout &lt;&lt; "\nReverse iteration: ";
+    for (auto rit = numbers.rbegin(); rit != numbers.rend(); ++rit) {
+        std::cout &lt;&lt; *rit &lt;&lt; " ";
+    }
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>修改容器元素</h3>
+    <p>使用迭代器修改容器中的元素值。</p>
+    
+    <div class="code-container">
+        <div class="code-header">
+            <span>修改元素示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;list&gt;
+
+int main() {
+    std::vector&lt;int&gt; numbers = {1, 2, 3, 4, 5};
+    
+    // 使用迭代器修改元素
+    for (auto it = numbers.begin(); it != numbers.end(); ++it) {
+        *it *= 2; // 每个元素乘以2
+    }
+    
+    std::cout &lt;&lt; "Modified vector: ";
+    for (int n : numbers) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 在list中修改元素
+    std::list&lt;std::string&gt; words = {"apple", "banana", "cherry"};
+    auto word_it = words.begin();
+    std::advance(word_it, 1);
+    *word_it = "blueberry";
+    
+    std::cout &lt;&lt; "\nModified list: ";
+    for (const auto& word : words) std::cout &lt;&lt; word &lt;&lt; " ";
+    
+    // 修改map中的值
+    std::map&lt;int, std::string&gt; students = {
+        {101, "Alice"}, 
+        {102, "Bob"}, 
+        {103, "Charlie"}
+    };
+    
+    auto it = students.find(102);
+    if (it != students.end()) {
+        it->second = "Robert"; // 修改值
+    }
+    
+    std::cout &lt;&lt; "\nStudents: ";
+    for (const auto& s : students) {
+        std::cout &lt;&lt; "[" &lt;&lt; s.first &lt;&lt; ": " &lt;&lt; s.second &lt;&lt; "] ";
+    }
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>迭代器失效问题</h3>
+    <p>了解在容器修改时迭代器失效的情况。</p>
+    
+    <div class="code-container">
+        <div class="code-header">
+            <span>迭代器失效示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;list&gt;
+
+int main() {
+    // vector迭代器失效示例
+    std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
+    auto vec_it = vec.begin() + 2;
+    std::cout &lt;&lt; "Third element: " &lt;&lt; *vec_it &lt;&lt; "\n";
+    
+    // 添加元素导致vector重新分配内存
+    vec.push_back(6);
+    // 此时vec_it可能失效！
+    // std::cout &lt;&lt; *vec_it &lt;&lt; "\n"; // 未定义行为
+    
+    // 安全做法：重新获取迭代器
+    vec_it = vec.begin() + 2;
+    std::cout &lt;&lt; "New third element: " &lt;&lt; *vec_it &lt;&lt; "\n";
+    
+    // list迭代器失效示例
+    std::list&lt;int&gt; lst = {10, 20, 30, 40};
+    auto lst_it = lst.begin();
+    std::advance(lst_it, 2); // 指向30
+    
+    // 删除元素
+    lst.erase(lst_it); // 删除30，lst_it失效
+    
+    // 安全做法：erase返回下一个有效迭代器
+    lst_it = lst.begin();
+    std::advance(lst_it, 1);
+    lst_it = lst.erase(lst_it); // 删除20，返回指向30的迭代器
+    
+    std::cout &lt;&lt; "List after erasure: ";
+    for (int n : lst) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>使用迭代器算法</h3>
+    <p>结合STL算法使用迭代器。</p>
+    
+    <div class="code-container">
+        <div class="code-header">
+            <span>算法使用示例</span>
+            <button class="copy-btn">复制代码</button>
+        </div>
+        <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;iterator&gt;
+
+int main() {
+    std::vector&lt;int&gt; data = {5, 3, 1, 4, 2};
+    
+    // 1. 排序
+    std::sort(data.begin(), data.end());
+    
+    // 2. 查找元素
+    auto it = std::find(data.begin(), data.end(), 3);
+    if (it != data.end()) {
+        std::cout &lt;&lt; "Found 3 at position: " 
+                  &lt;&lt; std::distance(data.begin(), it) &lt;&lt; "\n";
+    }
+    
+    // 3. 复制元素
+    std::vector&lt;int&gt; copy;
+    std::copy(data.begin(), data.end(), std::back_inserter(copy));
+    
+    // 4. 转换元素
+    std::vector&lt;int&gt; squares;
+    std::transform(data.begin(), data.end(), 
+                  std::back_inserter(squares),
+                  [](int x) { return x * x; });
+    
+    // 5. 累加
+    int sum = std::accumulate(data.begin(), data.end(), 0);
+    std::cout &lt;&lt; "Sum: " &lt;&lt; sum &lt;&lt; "\n";
+    
+    // 6. 输出到控制台
+    std::cout &lt;&lt; "Squares: ";
+    std::copy(squares.begin(), squares.end(), 
+             std::ostream_iterator&lt;int&gt;(std::cout, " "));
+    
+    return 0;
+}</pre>
+    </div>
+    
+    <h3>迭代器使用技巧</h3>
+    <ul>
+        <li><span class="highlight">使用auto简化声明</span>：让编译器自动推导迭代器类型</li>
+        <li><span class="highlight">优先使用范围for循环</span>：在不需要显式迭代器时更简洁</li>
+        <li><span class="highlight">使用cbegin/cend</span>：当不需要修改元素时</li>
+        <li><span class="highlight">注意迭代器失效</span>：修改容器时重新获取迭代器</li>
+        <li><span class="highlight">使用算法替代手动循环</span>：提高代码可读性和性能</li>
+        <li><span class="highlight">结合迭代器适配器</span>：如back_inserter, ostream_iterator等</li>
+    </ul>
+</div>
+    <!-- 迭代器适配器部分 -->
+    <div class="section" id="adapters">
+        <h2><i class="fas fa-tools"></i> 迭代器适配器</h2>
+        <p>迭代器适配器提供特殊功能的迭代器，用于扩展迭代器的能力。</p>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-retweet"></i> 反向迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-bidirectional">反向遍历</div>
+                </div>
+            </div>
+            
+            <p>允许反向遍历容器的适配器，适用于双向迭代器和随机访问迭代器。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">支持容器</div>
+                    <div class="stat-value">vector, deque, list等</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">创建方法</div>
+                    <div class="stat-value">rbegin(), rend()</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">主要用途</div>
+                    <div class="stat-value">反向遍历</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>反向迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; vec = {1, 2, 3, 4, 5};
+    
+    // 反向遍历
+    std::cout &lt;&lt; "Reverse: ";
+    for (auto rit = vec.rbegin(); rit != vec.rend(); ++rit) {
+        std::cout &lt;&lt; *rit &lt;&lt; " ";
+    }
+    
+    // 使用算法反向查找
+    auto rit = std::find(vec.rbegin(), vec.rend(), 3);
+    if (rit != vec.rend()) {
+        std::cout &lt;&lt; "\nFound 3 at position: " 
+                  &lt;&lt; std::distance(vec.begin(), rit.base() - 1);
+    }
+    
+    // 反向排序
+    std::sort(vec.rbegin(), vec.rend());
+    std::cout &lt;&lt; "\nReverse sorted: ";
+    for (int n : vec) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <div class="iterator-card">
+            <div class极iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-plus-circle"></i> 插入迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-output">容器插入</div>
+                </div>
+            </div>
+            
+            <p>将赋值操作转换为插入操作的迭代器适配器，包括back_inserter、front_inserter和inserter。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">适配器类型</div>
+                    <div class="stat-value">3种</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">主要用途</div>
+                    <div class="stat-value">算法结果插入容器</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">常用算法</div>
+                    <div class="stat-value">copy, transform</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>插入迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;list&gt;
+#include &lt;iterator&gt;
+#include &lt;algorithm&gt;
+
+int main() {
+    std::vector&lt;int&gt; src = {1, 2, 3, 4, 5};
+    std::vector&lt;int&gt; dest;
+    std::list&lt;int&gt; lst;
+    
+    // 使用back_inserter在末尾插入
+    std::copy(src.begin(), src.end(), std::back_inserter(dest));
+    std::cout &lt;&lt; "dest: ";
+    for (int n : dest) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 使用front_inserter在头部插入
+    std::copy(src.begin(), src.end(), std::front_inserter(lst));
+    std::cout &lt;&lt; "\nlst: ";
+    for (int n : lst) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    // 使用inserter在指定位置插入
+    std::vector&lt;int&gt; vec = {10, 20, 30};
+    auto it = vec.begin() + 1;
+    std::copy(src.begin(), src.end(), std::inserter(vec, it));
+    
+    std::cout &lt;&lt; "\nvec: ";
+    for (int n : vec) std::cout &lt;&lt; n &lt;&lt; " ";
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-stream"></i> 流迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-input">输入输出</div>
+                </div>
+            </div>
+            
+            <p>将流当作序列处理的迭代器适配器，包括istream_iterator和ostream_iterator。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">输入流迭代器</div>
+                    <div class="stat-value">istream_iterator</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">输出流迭代器</div>
+                    <div class="stat-value">ostream_iterator</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">常用场景</div>
+                    <div class="stat-value">流处理</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>流迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;sstream&gt;
+
+int main() {
+    // 从标准输入读取整数
+    std::cout &lt;&lt; "Enter integers (Ctrl+D to end): ";
+    std::istream_iterator&lt;int&gt; input_it(std::cin);
+    std::istream_iterator&lt;int&gt; end_it;
+    
+    std::vector&lt;int&gt; numbers;
+    std::copy(input_it, end_it, std::back_inserter(numbers));
+    
+    // 处理数据
+    std::transform(numbers.begin(), numbers.end(), numbers.begin(),
+                  [](int n) { return n * n; });
+    
+    // 输出到标准输出
+    std::cout &lt;&lt; "Squared values: ";
+    std::ostream_iterator&lt;int&gt; output_it(std::cout, " ");
+    std::copy(numbers.begin(), numbers.end(), output_it);
+    
+    // 使用字符串流
+    std::cout &lt;&lt; "\n\nUsing string stream:\n";
+    std::string data = "1.5 2.5 3.5 4.5";
+    std::istringstream iss(data);
+    std::istream_iterator&lt;double&gt; dbl_it(iss);
+    std::istream_iterator&lt;double&gt; dbl_end;
+    
+    double sum = 0;
+    while (dbl_it != dbl_end) {
+        sum += *dbl_it;
+        ++dbl_it;
+    }
+    std::cout &lt;&lt; "Sum: " &lt;&lt; sum;
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+        
+        <div class="iterator-card">
+            <div class="iterator-header">
+                <div class="iterator-title">
+                    <i class="fas fa-arrows-alt-h"></i> 移动迭代器
+                </div>
+                <div class="iterator-tags">
+                    <div class="tag tag-forward">移动语义</div>
+                </div>
+            </div>
+            
+            <p>将解引用操作转换为右值引用的迭代器适配器，用于实现移动语义。</p>
+            
+            <div class="iterator-stats">
+                <div class="stat-card">
+                    <div class="stat-title">创建方法</div>
+                    <div class="stat-value">make_move_iterator</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">主要用途</div>
+                    <div class="stat-value">转移资源所有权</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-title">使用场景</div>
+                    <div class="stat-value">大数据转移</div>
+                </div>
+            </div>
+            
+            <div class="code-container">
+                <div class="code-header">
+                    <span>移动迭代器示例</span>
+                    <button class="copy-btn">复制代码</button>
+                </div>
+                <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;iterator&gt;
+#include &lt;algorithm&gt;
+#include &lt;string&gt;
+
+int main() {
+    std::vector&lt;std::string&gt; src;
+    src.push_back("Hello");
+    src.push_back("World");
+    src.push_back("C++");
+    
+    std::cout &lt;&lt; "Source before move: ";
+    for (const auto& s : src) std::cout &lt;&lt; s &lt;&lt; " ";
+    
+    // 使用移动迭代器转移资源
+    std::vector&lt;std::string&gt; dest;
+    std::copy(std::make_move_iterator(src.begin()),
+              std::make_move_iterator(src.end()),
+              std::back_inserter(dest));
+    
+    std::cout &lt;&lt; "\nDestination: ";
+    for (const auto& s : dest) std::cout &lt;&lt; s &lt;&lt; " ";
+    
+    std::cout &lt;&lt; "\nSource after move: ";
+    for (const auto& s : src) std::cout &lt;&lt; s &lt;&lt; " "; // 原始字符串被移动
+    
+    return 0;
+}</pre>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 高级技巧部分 -->
+    <div class="section" id="advanced">
+        <h2><i class="fas fa-rocket"></i> 高级迭代器技巧</h2>
+        <p>探索迭代器的高级用法和技巧。</p>
+        
+        <h3>自定义迭代器</h3>
+        <p>创建自定义容器或数据结构的迭代器。</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>自定义迭代器示例</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+
+// 简单的整数范围类
+class IntRange {
+    int start;
+    int end;
+public:
+    IntRange(int s, int e) : start(s), end(e) {}
+    
+    // 自定义迭代器
+    class Iterator {
+        int current;
+    public:
+        using iterator_category = std::input_iterator_tag;
+        using value_type = int;
+        using difference_type = int;
+        using pointer = int*;
+        using reference = int&;
+        
+        Iterator(int c) : current(c) {}
+        
+        int operator*() const { return current; }
+        Iterator& operator++() { ++current; return *this; }
+        Iterator operator++(int) { Iterator tmp = *this; ++current; return tmp; }
+        
+        bool operator==(const Iterator& other) const {
+            return current == other.current;
+        }
+        
+        bool operator!=(const Iterator& other) const {
+            return !(*this == other);
+        }
+    };
+    
+    Iterator begin() const { return Iterator(start); }
+    Iterator end() const { return Iterator(end + 1); }
+};
+
+int main() {
+    IntRange range(5, 10);
+    
+    std::cout &lt;&lt; "Range: ";
+    for (int n : range) {
+        std::cout &lt;&lt; n &lt;&lt; " ";
+    }
+    
+    // 使用STL算法
+    std::cout &lt;&lt; "\nSum: " 
+              &lt;&lt; std::accumulate(range.begin(), range.end(), 0);
+    
+    return 0;
+}</pre>
+        </div>
+        
+        <h3>迭代器特性 (iterator_traits)</h3>
+        <p>使用iterator_traits获取迭代器的属性信息。</p>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>iterator_traits示例</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;iterator&gt;
+#include &lt;vector&gt;
+#include &lt;type_traits&gt;
+#include &lt;list&gt;
+
+template &lt;typename Iter&gt;
+void print_iterator_type() {
+    using traits = std::iterator_traits&lt;Iter&gt;;
+    
+    std::cout &lt;&lt; "Iterator category: ";
+    if (std::is_same_v&lt;typename traits::iterator_category, 
+                       std::random_access_iterator_tag&gt;) {
+        std::cout &lt;&lt; "Random Access";
+    } else if (std::is_same_v&lt;typename traits::iterator_category, 
+                             std::bidirectional_iterator_tag&gt;) {
+        std::cout &lt;&lt; "Bidirectional";
+    } else if (std::is_same_v&lt;typename traits::iterator_category, 
+                             std::forward_iterator_tag&gt;) {
+        std::cout &lt;&lt; "Forward";
+    } else {
+        std::cout &lt;&lt; "Other";
+    }
+    
+    std::cout &lt;&lt; "\nValue type: " 
+              &lt;&lt; typeid(typename traits::value_type).name();
+    std::cout &lt;&lt; "\nDifference type: " 
+              &lt;&lt; typeid(typename traits::difference_type).name() &lt;&lt; "\n\n";
+}
+
+int main() {
+    std::vector&lt;int&gt; vec;
+    std::list&lt;double&gt; lst;
+    
+    std::cout &lt;&lt; "Vector iterator traits:\n";
+    print_iterator_type&lt;decltype(vec.begin())&gt;();
+    
+    std::cout &lt;&lt; "List iterator traits:\n";
+    print_iterator_type&lt;decltype(lst.begin())&gt;();
+    
+    return 0;
+}</pre>
+        </div>
+        
+        <h3>迭代器类别与算法选择</h3>
+        <p>了解不同算法对迭代器类别的要求。</p>
+        
+        <table class="comparison-table">
+            <thead>
+                <tr>
+                    <th>算法</th>
+                    <th>所需迭代器类别</th>
+                    <th>时间复杂度</th>
+                    <th>典型容器</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>std::sort</td>
+                    <td>随机访问</td>
+                    <td>O(n log n)</td>
+                    <td>vector, deque, array</td>
+                </tr>
+                <tr>
+                    <td>std::stable_sort</td>
+                    <td>随机访问</td>
+                    <td>O(n log n)</td>
+                    <td>vector, deque, array</td>
+                </tr>
+                <tr>
+                    <td>std::list::sort</td>
+                    <td>双向</td>
+                    <td>O(n log n)</td>
+                    <td>list</td>
+                </tr>
+                <tr>
+                    <td>std::advance</td>
+                    <td>输入/前向/双向/随机访问</td>
+                    <td>O(n)/O(1)</td>
+                    <td>所有</td>
+                </tr>
+                <tr>
+                    <td>std::distance</td>
+                    <td>输入/前向/双向/随机访问</td>
+                    <td>O(n)/O(1)</td>
+                    <td>所有</td>
+                </tr>
+                <tr>
+                    <td>std::binary_search</td>
+                    <td>前向或更强</td>
+                    <td>O(log n)</td>
+                    <td>有序容器</td>
+                </tr>
+                <tr>
+                    <td>std::find</td>
+                    <td>输入</td>
+                    <td>O(n)</td>
+                    <td>所有</极>
+                </tr>
+                <tr>
+                    <td>std::reverse</td>
+                    <td>双向</td>
+                    <td>O(n)</td>
+                    <td>vector, list, deque</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <h3>使用迭代器的注意事项</h3>
+        <ul>
+            <li><span class="highlight">迭代器失效</span>：在修改容器时要注意迭代器可能失效</li>
+            <li><span class="highlight">范围检查</span>：始终确保迭代器在有效范围内</li>
+            <li><span class="highlight">性能考虑</span>：不同迭代器的操作时间复杂度不同</li>
+            <li><span class="highlight">容器选择</span>：根据算法需求选择适当的容器和迭代器</li>
+            <li><span class="highlight">迭代器适配器</span>：合理使用适配器简化代码</li>
+            <li><span class="highlight">移动语义</span>：对大对象使用移动迭代器提高性能</li>
+            <li><span class="highlight">const迭代器</span>：在不需要修改元素时使用const迭代器</li>
+        </ul>
+        
+        <div class="code-container">
+            <div class="code-header">
+                <span>迭代器最佳实践</span>
+                <button class="copy-btn">复制代码</button>
+            </div>
+            <pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;iterator&gt;
+
+int main() {
+    // 1. 尽量使用auto简化迭代器声明
+    std::vector&lt;int&gt; vec = {5, 3, 1, 4, 2};
+    auto it = std::find(vec.begin(), vec.end(), 3);
+    
+    // 2. 使用const迭代器防止意外修改
+    auto cit = vec.cbegin();
+    // *cit = 10; // 错误，不能修改
+    
+    // 3. 使用算法代替手动循环
+    std::sort(vec.begin(), vec.end());
+    
+    // 4. 使用迭代器适配器简化操作
+    std::vector&lt;int&gt; squares;
+    std::transform(vec.begin(), vec.end(), 
+                   std::back_inserter(squares),
+                   [](int x) { return x * x; });
+    
+    // 5. 使用移动语义提高效率
+    std::vector&lt;std::string&gt; words = {"Hello", "World"};
+    std::vector&lt;std::string&gt; words_copy;
+    std::move(words.begin(), words.end(), 
+              std::back_inserter(words_copy));
+    
+    // 6. 避免迭代器失效
+    for (auto it = vec.begin(); it != vec.end(); ) {
+        if (*it % 2 == 0) {
+            it = vec.erase(it); // 正确使用erase返回值
+        } else {
+            ++it;
+        }
+    }
+    
+    // 7. 使用标准算法函数
+    auto max_it = std::max_element(vec.begin(), vec.end());
+    if (max_it != vec.end()) {
+        std::cout &lt;&lt; "Max value: " &lt;&lt; *max_it &lt;&lt; "\n";
+    }
+    
+    // 8. 使用范围for循环简化代码
+    std::cout &lt;&lt; "Final vec: ";
+    for (int n : vec) {
+        std::cout &lt;&lt; n &lt;&lt; " ";
+    }
+    
+    return 0;
+}</pre>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p>C++ STL迭代器使用指南 &copy; 2023 - 全面掌握迭代器技巧，提升C++编程效率</p>
+        <p>迭代器是STL的核心概念，连接容器与算法，提供统一的数据访问方式</p>
+        <a href="#" class="back-btn"><i class="fas fa-arrow-up"></i> 返回顶部</a>
+        <a href="stl.html" class="back-btn"><i class="fas fa-arrow-up"></i> 返回主页</a>
+    </div>
+
+    <script>
+        // 标签切换功能
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // 移除所有活动状态
+                document.querySelectorAll('.nav-tab').forEach(t => {
+                    t.classList.remove('active');
+                });
+                document.querySelectorAll('.section').forEach(s => {
+                    s.classList.remove('active');
+                });
+                
+                // 设置当前活动状态
+                tab.classList.add('active');
+                const tabId = tab.getAttribute('data-tab');
+                document.getElementById(tabId).classList.add('active');
+            });
+        });
+        
+        // 复制代码功能
+        document.querySelectorAll('.copy-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const codeBlock = button.parentElement.nextElementSibling;
+                const codeText = codeBlock.textContent;
+                
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const originalText = button.textContent;
+                    button.textContent = '已复制!';
+                    button.style.background = 'var(--success-color)';
+                    
+                    setTimeout(() => {
+                        button.textContent = originalText;
+                        button.style.background = '';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('复制失败:', err);
+                    button.textContent = '复制失败';
+                    button.style.background = 'var(--accent-color)';
+                    
+                    setTimeout(() => {
+                        button.textContent = '复制代码';
+                        button.style.background = '';
+                    }, 2000);
+                });
+            });
+        });
+    </script>
+</body>
+</html>
